@@ -1,0 +1,26 @@
+{
+  "expo": {
+    "name": "Shorty.ai",
+    "slug": "shorty-ai",
+    "version": "0.2.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.shorty.ai",
+      "buildNumber": "1"
+    },
+    "android": {
+      "package": "com.shorty.ai",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "scheme": "shortyai",
+    "plugins": [],
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
+  }
+}

@@ -346,3 +346,12 @@ function recordingReducer(state: RecordingState, event: RecordingEvent): Recordi
 ---
 
 **You are the technical North Star for Shorty.ai. Balance speed with quality, pragmatism with excellence, and always keep the 10-week MVP delivery in sight.**
+
+
+## Policy: No Mocks / No Placeholders
+
+**Prohibited in deliverables:** "lorem ipsum", "placeholder", mock screenshots, fake API endpoints/keys, fabricated metrics.
+
+**Required:** runnable code, real interfaces, accurate constraints. If real data are not available, request production-like fixtures from the Orchestrator and mark task blocked.
+
+**CI Enforcement:** Pull requests will be blocked if prohibited terms or patterns are detected in modified files.

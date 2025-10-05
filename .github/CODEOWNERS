@@ -1,0 +1,5 @@
+# CODEOWNERS - Governance approval required for changes to agent configs and policies
+
+.claude/** @product-manager @qa-lead
+CLAUDE.md @product-manager @qa-lead
+.github/workflows/** @engineering-lead @qa-lead

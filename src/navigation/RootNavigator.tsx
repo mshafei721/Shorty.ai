@@ -1,0 +1,106 @@
+import React, { useEffect, useState } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import SplashScreen from '../screens/SplashScreen';
+import NicheSelectionScreen from '../screens/NicheSelectionScreen';
+import ProjectsListScreen from '../screens/ProjectsListScreen';
+import SettingsScreen from '../screens/SettingsScreen';
+
+export type RootStackParamList = {
+  Onboarding: undefined;
+  Main: undefined;
+};
+
+export type OnboardingStackParamList = {
+  Splash: undefined;
+  NicheSelection: undefined;
+};
+
+export type MainTabsParamList = {
+  ProjectsList: undefined;
+  Settings: undefined;
+};
+
+const RootStack = createStackNavigator<RootStackParamList>();
+const OnboardingStack = createStackNavigator<OnboardingStackParamList>();
+const MainTabs = createBottomTabNavigator<MainTabsParamList>();
+
+function OnboardingNavigator() {
+  return (
+    <OnboardingStack.Navigator screenOptions={{ headerShown: false }}>
+      <OnboardingStack.Screen name="Splash" component={SplashScreen} />
+      <OnboardingStack.Screen name="NicheSelection" component={NicheSelectionScreen} />
+    </OnboardingStack.Navigator>
+  );
+}
+
+function MainNavigator() {
+  return (
+    <MainTabs.Navigator>
+      <MainTabs.Screen
+        name="ProjectsList"
+        component={ProjectsListScreen}
+        options={{ title: 'Projects' }}
+      />
+      <MainTabs.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{ title: 'Settings' }}
+      />
+    </MainTabs.Navigator>
+  );
+}
+
+export function RootNavigator() {
+  const [initialRoute, setInitialRoute] = useState<keyof RootStackParamList>('Onboarding');
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    async function checkOnboardingStatus() {
+      try {
+        const route = await getInitialRoute();
+        setInitialRoute(route);
+      } catch (error) {
+        console.error('Failed to check onboarding status:', error);
+      } finally {
+        setIsReady(true);
+      }
+    }
+
+    checkOnboardingStatus();
+  }, []);
+
+  if (!isReady) {
+    return null;
+  }
+
+  return (
+    <NavigationContainer>
+      <RootStack.Navigator
+        initialRouteName={initialRoute}
+        screenOptions={{ headerShown: false }}
+      >
+        <RootStack.Screen name="Onboarding" component={OnboardingNavigator} />
+        <RootStack.Screen name="Main" component={MainNavigator} />
+      </RootStack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+export async function getInitialRoute(): Promise<keyof RootStackParamList> {
+  try {
+    const userProfileData = await AsyncStorage.getItem('userProfile');
+
+    if (userProfileData) {
+      const profile = JSON.parse(userProfileData);
+      if (profile.onboarded === true) {
+        return 'Main';
+      }
+    }
+  } catch (error) {
+    console.error('Failed to get initial route:', error);
+  }
+  return 'Onboarding';
+}

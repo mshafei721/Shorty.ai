@@ -223,3 +223,9 @@ Use `appStateVersion` key to track schema updates for future migrations.
 ## Open Questions
 
 See [PRD.md](PRD.md) Section 20 for current open questions regarding AI providers, intro/outro branding, and offline queue requirements.
+
+## Content Authenticity Policy
+
+**No Mocks / No Placeholders.** Deliverables must not include "lorem ipsum", placeholder images, fake endpoints/keys, or fabricated data. Provide runnable code and real interfaces. If real data are unavailable, coordinate with the Orchestrator for production-like fixtures and mark the task as blocked.
+
+**CI Enforcement:** Pull requests will fail if prohibited terms/patterns are detected in modified files (app code, docs, or agent outputs).
