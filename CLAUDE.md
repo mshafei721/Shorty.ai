@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Shorty.ai** — Mobile-first Expo Go short-form video creator for niche-focused creators. Users onboard via niche selection, create projects, script/record videos with teleprompter, apply automated edits via external APIs, preview, and export locally stored clips.
 
 **Tech Stack:**
-- Expo SDK 50 (managed workflow, Expo Go compatible)
+- Expo SDK 54 (managed workflow, Expo Go compatible)
 - React Native + TypeScript
 - State: React Context or Redux Toolkit (JS only)
 - Storage: AsyncStorage (metadata) + FileSystem (video files)
