@@ -8,7 +8,16 @@
       "Bash(git add:*)",
       "Bash(git commit -m \"$(cat <<''EOF''\nfeat(framework): initialize Expo SDK 50 project [A1]\n\nInitialize Expo SDK 50 managed workflow with TypeScript, React Navigation v6,\nand AsyncStorage. Implement onboarding flow with niche selection and navigation\nguards. Add schema versioning system for future migrations.\n\nFeatures:\n- Expo SDK 50.0.17 with TypeScript strict mode\n- React Navigation v6 (Stack + Bottom Tabs)\n- AsyncStorage schema v1 with migration pattern\n- Three-tier navigation: Root → (Onboarding | Main) → Screens\n- Onboarding guard based on userProfile.onboarded flag\n- Placeholder screens (Splash, NicheSelection, ProjectsList, Settings)\n\nTest Coverage:\n- 88.46% statements (exceeds 80% threshold)\n- 81.25% branches (exceeds 75% threshold)\n- 84.61% functions (exceeds 80% threshold)\n- 22 passing unit tests (TC-A1-001, TC-A1-002, TC-A1-003)\n\nTest Cases:\nTC-A1-001: AsyncStorage schema initialization and migration\nTC-A1-002: Navigation guards for onboarding flow\nTC-A1-003: App integration test with loading state\n\n🤖 Generated with Claude Code\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
       "Bash(git push:*)",
-      "Bash(gh pr create:*)"
+      "Bash(gh pr create:*)",
+      "Bash(npx expo install:*)",
+      "Bash(npx expo customize:*)",
+      "Bash(npx expo start:*)",
+      "Bash(taskkill:*)",
+      "Bash(netstat:*)",
+      "Bash(awk:*)",
+      "Bash(xargs:*)",
+      "Bash(cat:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfix(expo): resolve Expo Go connection issues [A1]\n\nFix version mismatch and missing assets preventing Expo Go connection.\n\nChanges:\n- Downgrade react-native-gesture-handler: 2.28.0 → ~2.14.0 (Expo SDK 50 compatible)\n- Remove missing asset references from app.json (icon, splash, favicon)\n- Use minimal Expo config without assets for initial development\n\nResolves:\n- \"react-native-gesture-handler expected version: ~2.14.0\" warning\n- Expo Go \"cannot connect\" error due to missing asset files\n\nTesting:\n- Run: npx expo start --clear --tunnel\n- Metro bundler rebuilds cache successfully\n- QR code should now work with Expo Go app\n\n🤖 Generated with Claude Code\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": [],
     "ask": []
