@@ -5,7 +5,10 @@
       "Bash(npm install:*)",
       "Bash(npm test:*)",
       "Bash(npm run typecheck:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat(framework): initialize Expo SDK 50 project [A1]\n\nInitialize Expo SDK 50 managed workflow with TypeScript, React Navigation v6,\nand AsyncStorage. Implement onboarding flow with niche selection and navigation\nguards. Add schema versioning system for future migrations.\n\nFeatures:\n- Expo SDK 50.0.17 with TypeScript strict mode\n- React Navigation v6 (Stack + Bottom Tabs)\n- AsyncStorage schema v1 with migration pattern\n- Three-tier navigation: Root → (Onboarding | Main) → Screens\n- Onboarding guard based on userProfile.onboarded flag\n- Placeholder screens (Splash, NicheSelection, ProjectsList, Settings)\n\nTest Coverage:\n- 88.46% statements (exceeds 80% threshold)\n- 81.25% branches (exceeds 75% threshold)\n- 84.61% functions (exceeds 80% threshold)\n- 22 passing unit tests (TC-A1-001, TC-A1-002, TC-A1-003)\n\nTest Cases:\nTC-A1-001: AsyncStorage schema initialization and migration\nTC-A1-002: Navigation guards for onboarding flow\nTC-A1-003: App integration test with loading state\n\n🤖 Generated with Claude Code\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)",
+      "Bash(gh pr create:*)"
     ],
     "deny": [],
     "ask": []
