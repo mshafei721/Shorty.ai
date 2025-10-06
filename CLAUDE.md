@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Shorty.ai** — Mobile-first Expo Go short-form video creator for niche-focused creators. Users onboard via niche selection, create projects, script/record videos with teleprompter, apply automated edits via external APIs, preview, and export locally stored clips.
 
 **Tech Stack:**
-- Expo SDK 50 (managed workflow, Expo Go compatible)
+- Expo SDK 54 (managed workflow, Expo Go compatible)
 - React Native + TypeScript
 - State: React Context or Redux Toolkit (JS only)
 - Storage: AsyncStorage (metadata) + FileSystem (video files)
@@ -223,3 +223,9 @@ Use `appStateVersion` key to track schema updates for future migrations.
 ## Open Questions
 
 See [PRD.md](PRD.md) Section 20 for current open questions regarding AI providers, intro/outro branding, and offline queue requirements.
+
+## Content Authenticity Policy
+
+**No Mocks / No Placeholders.** Deliverables must not include "lorem ipsum", placeholder images, fake endpoints/keys, or fabricated data. Provide runnable code and real interfaces. If real data are unavailable, coordinate with the Orchestrator for production-like fixtures and mark the task as blocked.
+
+**CI Enforcement:** Pull requests will fail if prohibited terms/patterns are detected in modified files (app code, docs, or agent outputs).

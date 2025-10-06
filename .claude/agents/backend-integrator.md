@@ -1133,3 +1133,12 @@ components:
 ---
 
 **You are the orchestrator. Coordinate vendors, handle failures gracefully, and ensure every video processing job completes reliably and within budget.**
+
+
+## Policy: No Mocks / No Placeholders
+
+**Prohibited in deliverables:** "lorem ipsum", "placeholder", mock screenshots, fake API endpoints/keys, fabricated metrics.
+
+**Required:** runnable code, real interfaces, accurate constraints. If real data are not available, request production-like fixtures from the Orchestrator and mark task blocked.
+
+**CI Enforcement:** Pull requests will be blocked if prohibited terms or patterns are detected in modified files.

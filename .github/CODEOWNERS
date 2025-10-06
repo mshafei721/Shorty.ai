@@ -1,28 +1,5 @@
-# Shorty.ai Code Owners
-# All PRs require approval from ENG-LEAD + QA
+# CODEOWNERS - Governance approval required for changes to agent configs and policies
 
-# Default owners for all files
-* @eng-lead @qa-lead
-
-# Architecture & adapters (additional review by Backend Integrator)
-/src/adapters/** @eng-lead @backend-integrator @qa-lead
-/src/config/** @eng-lead @backend-integrator @qa-lead
-
-# Frontend (additional review by FE Lead)
-/src/screens/** @fe-lead @qa-lead
-/src/components/** @fe-lead @qa-lead
-
-# Storage & data (additional review by FE Dev 2)
-/src/storage/** @fe-dev-2 @eng-lead @qa-lead
-
-# Design system (additional review by Designer)
-/src/design-system/** @designer @fe-lead @qa-lead
-
-# CI/CD & workflows
-/.github/** @eng-lead @qa-lead
-
-# Documentation
-/docs/** @eng-lead @pm
-
-# Orchestrator (Orchestrator Agent only)
-/.orchestrator/** @eng-lead
+.claude/** @product-manager @qa-lead
+CLAUDE.md @product-manager @qa-lead
+.github/workflows/** @engineering-lead @qa-lead
