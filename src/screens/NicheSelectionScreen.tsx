@@ -3,14 +3,15 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 import type { NicheSelectionScreenProps } from '../navigation/types';
 
 const NICHES = [
-  'Technology',
-  'Health & Fitness',
-  'Food & Cooking',
-  'Travel',
+  'Healthcare',
+  'Finance',
+  'Fitness',
   'Education',
-  'Entertainment',
-  'Business',
-  'Lifestyle',
+  'Real Estate',
+  'Technology',
+  'Food & Beverage',
+  'Travel',
+  'Fashion',
 ];
 
 export default function NicheSelectionScreen({ navigation }: NicheSelectionScreenProps) {
@@ -27,7 +28,7 @@ export default function NicheSelectionScreen({ navigation }: NicheSelectionScree
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} accessibilityLabel="Niche selection screen. Choose your content focus.">
       <Text style={styles.title}>Choose Your Niche</Text>
       <Text style={styles.subtitle}>Select the primary topic for your content</Text>
 
@@ -40,6 +41,9 @@ export default function NicheSelectionScreen({ navigation }: NicheSelectionScree
               selectedNiche === niche && styles.nicheButtonSelected,
             ]}
             onPress={() => handleNicheSelect(niche)}
+            accessibilityLabel={`${niche} niche`}
+            accessibilityRole="button"
+            accessibilityState={{ selected: selectedNiche === niche }}
           >
             <Text
               style={[
@@ -57,6 +61,9 @@ export default function NicheSelectionScreen({ navigation }: NicheSelectionScree
         style={[styles.continueButton, !selectedNiche && styles.continueButtonDisabled]}
         onPress={handleContinue}
         disabled={!selectedNiche}
+        accessibilityLabel="Continue to sub-niche selection"
+        accessibilityRole="button"
+        accessibilityState={{ disabled: !selectedNiche }}
       >
         <Text style={styles.continueButtonText}>Continue</Text>
       </TouchableOpacity>

@@ -2,21 +2,24 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import type { SubNicheConfirmationScreenProps } from '../navigation/types';
 import { setStorageItem } from '../storage';
+import { Toast } from '../components/Toast';
 
 const SUB_NICHES: Record<string, string[]> = {
-  Technology: ['AI & Machine Learning', 'Web Development', 'Mobile Apps', 'Cybersecurity'],
-  'Health & Fitness': ['Nutrition', 'Workout Routines', 'Mental Health', 'Yoga & Meditation'],
-  'Food & Cooking': ['Quick Recipes', 'Baking', 'Healthy Eating', 'International Cuisine'],
-  Travel: ['Budget Travel', 'Luxury Travel', 'Adventure Travel', 'Travel Tips'],
-  Education: ['Study Tips', 'Online Learning', 'Career Development', 'Language Learning'],
-  Entertainment: ['Movies & TV', 'Gaming', 'Music', 'Pop Culture'],
-  Business: ['Entrepreneurship', 'Marketing', 'Finance', 'Productivity'],
-  Lifestyle: ['Home Decor', 'Fashion', 'Personal Development', 'Relationships'],
+  Healthcare: ['Physiotherapy', 'Cardiology', 'Dermatology'],
+  Finance: ['Personal Finance', 'Investing', 'Real Estate'],
+  Fitness: ['Yoga', 'Weightlifting', 'Running'],
+  Education: ['K-12', 'Higher Ed', 'Professional Development'],
+  'Real Estate': ['Residential', 'Commercial', 'Property Management'],
+  Technology: ['Software Development', 'AI/ML', 'Cybersecurity'],
+  'Food & Beverage': ['Restaurants', 'Recipes', 'Food Trucks'],
+  Travel: ['Adventure', 'Luxury', 'Budget Travel'],
+  Fashion: ['Streetwear', 'Haute Couture', 'Sustainable Fashion'],
 };
 
 export default function SubNicheConfirmationScreen({ route, navigation }: SubNicheConfirmationScreenProps) {
   const { niche } = route.params;
   const [selectedSubNiche, setSelectedSubNiche] = useState<string | null>(null);
+  const [showToast, setShowToast] = useState(false);
   const subNiches = SUB_NICHES[niche] || [];
 
   const handleSubNicheSelect = (subNiche: string) => {
@@ -32,10 +35,15 @@ export default function SubNicheConfirmationScreen({ route, navigation }: SubNic
           onboardedAt: new Date().toISOString(),
         });
 
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Splash' }],
-        });
+        setShowToast(true);
+
+        setTimeout(() => {
+          setShowToast(false);
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Main' }],
+          });
+        }, 3000);
       } catch (error) {
         console.error('Failed to save user profile:', error);
       }
@@ -43,7 +51,9 @@ export default function SubNicheConfirmationScreen({ route, navigation }: SubNic
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} accessibilityLabel={`Sub-niche selection screen for ${niche}. Choose your specific focus.`}>
+      {showToast && <Toast message="Welcome to Shorty.ai!" />}
+
       <Text style={styles.title}>Choose Your Sub-Niche</Text>
       <Text style={styles.subtitle}>Refine your focus within {niche}</Text>
 
@@ -56,6 +66,9 @@ export default function SubNicheConfirmationScreen({ route, navigation }: SubNic
               selectedSubNiche === subNiche && styles.subNicheButtonSelected,
             ]}
             onPress={() => handleSubNicheSelect(subNiche)}
+            accessibilityLabel={`${subNiche} sub-niche`}
+            accessibilityRole="button"
+            accessibilityState={{ selected: selectedSubNiche === subNiche }}
           >
             <Text
               style={[
@@ -73,6 +86,9 @@ export default function SubNicheConfirmationScreen({ route, navigation }: SubNic
         style={[styles.completeButton, !selectedSubNiche && styles.completeButtonDisabled]}
         onPress={handleComplete}
         disabled={!selectedSubNiche}
+        accessibilityLabel="Complete onboarding and start using Shorty.ai"
+        accessibilityRole="button"
+        accessibilityState={{ disabled: !selectedSubNiche }}
       >
         <Text style={styles.completeButtonText}>Complete Setup</Text>
       </TouchableOpacity>

@@ -13,7 +13,7 @@ export default function SplashScreen({ navigation }: SplashScreenProps) {
 
         setTimeout(() => {
           if (userProfile) {
-            navigation.replace('NicheSelection');
+            navigation.replace('Main' as any);
           } else {
             navigation.replace('NicheSelection');
           }
