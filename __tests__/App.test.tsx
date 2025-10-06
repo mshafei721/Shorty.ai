@@ -36,17 +36,18 @@ describe('App', () => {
     expect(getByTestId('root-navigator')).toBeTruthy();
   });
 
-  it('handles initialization errors gracefully and still renders', async () => {
+  it('handles initialization errors gracefully and shows error UI', async () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(schema, 'initializeSchema').mockRejectedValueOnce(new Error('Init failed'));
 
-    const { getByTestId, queryByTestId } = render(<App />);
+    const { getByText, queryByTestId } = render(<App />);
 
     await waitFor(() => {
       expect(queryByTestId('app-loading')).toBeNull();
     });
 
     expect(consoleSpy).toHaveBeenCalledWith('App initialization failed:', expect.any(Error));
-    expect(getByTestId('root-navigator')).toBeTruthy();
+    expect(getByText('Storage Error')).toBeTruthy();
+    expect(getByText('Init failed')).toBeTruthy();
   });
 });

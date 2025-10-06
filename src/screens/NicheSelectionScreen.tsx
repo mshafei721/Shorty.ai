@@ -98,10 +98,10 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 16,
+    justifyContent: 'space-between',
   },
   nicheCard: {
-    width: '47%',
+    width: '48%',
     aspectRatio: 1,
     borderRadius: 12,
     borderWidth: 2,
@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#FAFAFA',
+    marginBottom: 16,
   },
   nicheCardSelected: {
     borderColor: '#007AFF',

@@ -7,6 +7,21 @@
  * @module config/circuit-breakers
  */
 
+import Constants from 'expo-constants';
+
+// ============================================================================
+// Environment Helper
+// ============================================================================
+
+/**
+ * Get current environment (development/production)
+ * Safe for React Native - doesn't use process.env
+ */
+function getEnvironment(): string {
+  if (__DEV__) return 'development';
+  return Constants.expoConfig?.extra?.environment || 'production';
+}
+
 // ============================================================================
 // Types & Interfaces
 // ============================================================================
@@ -347,19 +362,13 @@ export const WEBHOOK_CONFIG = {
  */
 export function getCircuitBreakerConfig(
   service: keyof typeof CIRCUIT_BREAKER_CONFIGS,
-  env: string = process.env.NODE_ENV || 'production'
+  env: string = getEnvironment()
 ): CircuitBreakerConfig {
   const config = CIRCUIT_BREAKER_CONFIGS[service];
 
   // Disable circuit breakers in test environment
   if (env === 'test') {
     return { ...config, enabled: false };
-  }
-
-  // Allow environment variable overrides
-  const envOverride = process.env[`CIRCUIT_${service.toUpperCase()}_ENABLED`];
-  if (envOverride !== undefined) {
-    return { ...config, enabled: envOverride === 'true' };
   }
 
   return config;
@@ -370,7 +379,7 @@ export function getCircuitBreakerConfig(
  */
 export function getSLAThresholds(
   service: keyof typeof SLA_THRESHOLDS,
-  env: string = process.env.NODE_ENV || 'production'
+  env: string = getEnvironment()
 ): SLAThresholds {
   const thresholds = SLA_THRESHOLDS[service];
 

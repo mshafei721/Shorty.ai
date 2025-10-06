@@ -29,12 +29,26 @@ jest.mock('expo-constants', () => ({
     expoConfig: {
       version: '0.2.0',
       name: 'Shorty.ai',
+      extra: {
+        environment: 'test',
+      },
     },
   },
   Constants: {
     expoConfig: {
       version: '0.2.0',
       name: 'Shorty.ai',
+      extra: {
+        environment: 'test',
+      },
     },
+  },
+}));
+
+jest.mock('expo-linking', () => ({
+  __esModule: true,
+  createURL: jest.fn((path) => `exp://localhost:8081/${path}`),
+  default: {
+    createURL: jest.fn((path) => `exp://localhost:8081/${path}`),
   },
 }));
