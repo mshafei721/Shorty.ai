@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import * as Linking from 'expo-linking';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SplashScreen from '../screens/SplashScreen';
 import NicheSelectionScreen from '../screens/NicheSelectionScreen';
@@ -26,6 +27,28 @@ export type MainTabsParamList = {
 const RootStack = createStackNavigator<RootStackParamList>();
 const OnboardingStack = createStackNavigator<OnboardingStackParamList>();
 const MainTabs = createBottomTabNavigator<MainTabsParamList>();
+
+const linking = {
+  prefixes: [Linking.createURL('/'), 'shortyai://'],
+  config: {
+    screens: {
+      Onboarding: {
+        path: 'onboarding',
+        screens: {
+          Splash: 'splash',
+          NicheSelection: 'niche-selection',
+        },
+      },
+      Main: {
+        path: 'main',
+        screens: {
+          ProjectsList: 'projects',
+          Settings: 'settings',
+        },
+      },
+    },
+  },
+};
 
 function OnboardingNavigator() {
   return (
@@ -77,7 +100,7 @@ export function RootNavigator() {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       <RootStack.Navigator
         initialRouteName={initialRoute}
         screenOptions={{ headerShown: false }}
