@@ -1,7 +1,7 @@
 # Shorty.ai PlanBoard
 
-**Last Updated:** 2025-10-05
-**Current Milestone:** M0 (Foundations)
+**Last Updated:** 2025-10-06
+**Current Milestone:** M1 (Recording & Teleprompter)
 
 ---
 
@@ -124,8 +124,8 @@
 
 | Milestone | Duration | Tickets | Completed | Status |
 |-----------|----------|---------|-----------|--------|
-| **M0** | Oct 7-20 | 9 | 0 | 🔵 In Progress |
-| **M1** | Oct 21-Nov 3 | 6 | 0 | ⏳ Pending |
+| **M0** | Oct 7-20 | 9 | 9 | ✅ Complete (Oct 6) |
+| **M1** | Oct 21-Nov 3 | 6 | 0 | 🔵 In Progress (Kickoff Oct 6) |
 | **M2** | Nov 4-17 | 8 | 0 | ⏳ Pending |
 | **M3** | Nov 18-24 | 1 | 0 | ⏳ Pending |
 | **M4** | Nov 25-Dec 1 | 1 | 0 | ⏳ Pending |
