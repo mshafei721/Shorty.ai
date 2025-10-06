@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1759692786683" clover="3.2.0">
+  <project timestamp="1759692786683" name="All files">
+    <metrics statements="50" coveredstatements="47" conditionals="12" coveredconditionals="12" methods="13" coveredmethods="11" elements="75" coveredelements="70" complexity="0" loc="50" ncloc="50" packages="3" files="3" classes="3"/>
+    <package name="Shorty.ai">
+      <metrics statements="12" coveredstatements="12" conditionals="2" coveredconditionals="2" methods="3" coveredmethods="3"/>
+      <file name="App.tsx" path="D:\009_Projects_AI\Personal_Projects\Shorty.ai\App.tsx">
+        <metrics statements="12" coveredstatements="12" conditionals="2" coveredconditionals="2" methods="3" coveredmethods="3"/>
+        <line num="8" count="7" type="stmt"/>
+        <line num="10" count="6" type="stmt"/>
+        <line num="12" count="3" type="stmt"/>
+        <line num="13" count="3" type="stmt"/>
+        <line num="14" count="2" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="17" count="1" type="stmt"/>
+        <line num="21" count="3" type="stmt"/>
+        <line num="24" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="25" count="3" type="stmt"/>
+        <line num="32" count="3" type="stmt"/>
+        <line num="40" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="Shorty.ai.src.navigation">
+      <metrics statements="25" coveredstatements="22" conditionals="6" coveredconditionals="6" methods="6" coveredmethods="4"/>
+      <file name="RootNavigator.tsx" path="D:\009_Projects_AI\Personal_Projects\Shorty.ai\src\navigation\RootNavigator.tsx">
+        <metrics statements="25" coveredstatements="22" conditionals="6" coveredconditionals="6" methods="6" coveredmethods="4"/>
+        <line num="26" count="2" type="stmt"/>
+        <line num="27" count="2" type="stmt"/>
+        <line num="28" count="2" type="stmt"/>
+        <line num="31" count="0" type="stmt"/>
+        <line num="40" count="0" type="stmt"/>
+        <line num="57" count="3" type="stmt"/>
+        <line num="58" count="2" type="stmt"/>
+        <line num="60" count="2" type="stmt"/>
+        <line num="62" count="1" type="stmt"/>
+        <line num="63" count="1" type="stmt"/>
+        <line num="64" count="1" type="stmt"/>
+        <line num="66" count="0" type="stmt"/>
+        <line num="68" count="1" type="stmt"/>
+        <line num="72" count="1" type="stmt"/>
+        <line num="75" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="76" count="1" type="stmt"/>
+        <line num="79" count="1" type="stmt"/>
+        <line num="93" count="13" type="stmt"/>
+        <line num="94" count="13" type="stmt"/>
+        <line num="96" count="11" type="cond" truecount="2" falsecount="0"/>
+        <line num="97" count="8" type="stmt"/>
+        <line num="98" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="99" count="2" type="stmt"/>
+        <line num="103" count="4" type="stmt"/>
+        <line num="105" count="11" type="stmt"/>
+      </file>
+    </package>
+    <package name="Shorty.ai.src.storage">
+      <metrics statements="13" coveredstatements="13" conditionals="4" coveredconditionals="4" methods="4" coveredmethods="4"/>
+      <file name="schema.ts" path="D:\009_Projects_AI\Personal_Projects\Shorty.ai\src\storage\schema.ts">
+        <metrics statements="13" coveredstatements="13" conditionals="4" coveredconditionals="4" methods="4" coveredmethods="4"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="53" count="8" type="stmt"/>
+        <line num="54" count="8" type="stmt"/>
+        <line num="56" count="8" type="cond" truecount="2" falsecount="0"/>
+        <line num="57" count="1" type="stmt"/>
+        <line num="60" count="7" type="stmt"/>
+        <line num="73" count="1" type="stmt"/>
+        <line num="74" count="1" type="stmt"/>
+        <line num="82" count="1" type="stmt"/>
+        <line num="86" count="2" type="stmt"/>
+        <line num="87" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="91" count="1" type="stmt"/>
+        <line num="92" count="1" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>
