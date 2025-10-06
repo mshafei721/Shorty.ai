@@ -17,31 +17,37 @@
     ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.shortyai.app"
+      "bundleIdentifier": "com.shortyai.app",
+      "associatedDomains": ["applinks:shortyai.app"]
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.shortyai.app"
+      "package": "com.shortyai.app",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "shortyai.app",
+              "pathPrefix": "/project"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> Stashed changes
     },
     "extra": {
       "eas": {
         "projectId": "shorty-ai-mvp"
       }
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
     }
   }
 }
