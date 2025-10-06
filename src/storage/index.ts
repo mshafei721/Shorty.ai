@@ -36,6 +36,7 @@ async function migrateStorage(fromVersion: number, toVersion: number): Promise<v
 }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 function getStorageKey(key: keyof StorageSchema): string {
   const keyMap: Record<keyof StorageSchema, string> = {
     appStateVersion: STORAGE_KEYS.APP_STATE_VERSION,
@@ -50,12 +51,18 @@ function getStorageKey(key: keyof StorageSchema): string {
 
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 export async function getStorageItem<K extends keyof StorageSchema>(
   key: K
 ): Promise<StorageSchema[K] | null> {
   try {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     const storageKey = getStorageKey(key);
+=======
+    const storageKey = STORAGE_KEYS[key.toUpperCase() as keyof typeof STORAGE_KEYS];
+>>>>>>> Stashed changes
 =======
     const storageKey = STORAGE_KEYS[key.toUpperCase() as keyof typeof STORAGE_KEYS];
 >>>>>>> Stashed changes
@@ -79,7 +86,11 @@ export async function setStorageItem<K extends keyof StorageSchema>(
 ): Promise<void> {
   try {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     const storageKey = getStorageKey(key);
+=======
+    const storageKey = STORAGE_KEYS[key.toUpperCase() as keyof typeof STORAGE_KEYS];
+>>>>>>> Stashed changes
 =======
     const storageKey = STORAGE_KEYS[key.toUpperCase() as keyof typeof STORAGE_KEYS];
 >>>>>>> Stashed changes

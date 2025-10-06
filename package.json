@@ -13,6 +13,7 @@
   },
   "dependencies": {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     "@react-native-async-storage/async-storage": "~2.1.0",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/native-stack": "^6.11.0",
@@ -37,6 +38,8 @@
     "ts-jest": "^29.4.4",
     "typescript": "~5.3.3"
 =======
+=======
+>>>>>>> Stashed changes
     "expo": "^54.0.0",
     "expo-status-bar": "~2.0.0",
     "react": "18.3.1",
@@ -79,6 +82,9 @@
         "statements": 80
       }
     }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   },
   "private": true

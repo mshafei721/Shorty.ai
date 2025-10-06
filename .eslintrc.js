@@ -11,6 +11,10 @@ module.exports = {
   },
   env: {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+    'react-native/react-native': true,
+>>>>>>> Stashed changes
 =======
     'react-native/react-native': true,
 >>>>>>> Stashed changes

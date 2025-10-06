@@ -29,12 +29,18 @@
     "web": {
       "favicon": "./assets/favicon.png"
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
     },
     "extra": {
       "eas": {
         "projectId": "shorty-ai-mvp"
       }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     }
   }
