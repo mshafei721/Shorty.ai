@@ -1,0 +1,167 @@
+# Shorty.ai PlanBoard
+
+**Last Updated:** 2025-10-05
+**Current Milestone:** M0 (Foundations)
+
+---
+
+## Legend
+- 🔵 In Progress
+- ⏸️ Blocked
+- ✅ Done
+- ⏳ Pending
+
+---
+
+## M0: Foundations (Oct 7-20, 2025)
+
+| Ticket | Owner | Due | Status | Exit Criteria | Branch | Notes |
+|--------|-------|-----|--------|---------------|--------|-------|
+| **A0** | ENG-LEAD | Oct 8 | ⏳ Pending | Architecture docs, CODEOWNERS, PR template complete | feature/arch-A0-setup-guidelines | Blocks A1 |
+| **E1** | PD | Oct 11 | ⏳ Pending | Design system & 10 M0 screens in Figma, PDF handoff | feature/design-E1-system-library | Parallel to A1 |
+| **A1** | FE | Oct 9 | ⏳ Pending | Expo runs on iOS/Android, nav stacks, AsyncStorage v1 | feature/arch-A1-init-expo | Depends on A0 |
+| **A2** | FE Dev 1 | Oct 12 | ⏳ Pending | Onboarding flow: niche selection → AsyncStorage persistence | feature/app-A2-onboarding-flow | Depends on A1 |
+| **A3** | FE Dev 2 | Oct 15 | ⏳ Pending | Projects CRUD: create, edit, soft delete | feature/app-A3-projects-crud | Depends on A2 |
+| **C1** | FE Dev 2 | Oct 20 | ⏳ Pending | AsyncStorage schema v1, migration framework, unit tests ≥95% | feature/storage-C1-schema-migrations | Depends on A1 |
+| **A4** | FE Dev 1 | Oct 18 | ⏳ Pending | Project dashboard, video grid (empty/populated), deep links | feature/app-A4-dashboard-deeplinks | Depends on A3 |
+| **F1** | QA | Oct 20 | ⏳ Pending | M0 test plan executed, device matrix (4 devices), bug report | feature/qa-F1-m0-test-plan | Depends on A1-A4, C1 |
+| **PM** | PM | Oct 20 | ⏳ Pending | Risk register updated, mid/exit reviews scheduled, demo script | feature/pm-scope-tracking | Coordinates all |
+
+### M0 Burnup
+- **Planned Story Points:** 42h (A0:2h, A1:4h, A2:8h, A3:12h, A4:10h, C1:8h, E1:16h, F1:20h, PM:2h = 82h total team effort, 42h dev)
+- **Completed Story Points:** 0h
+- **Completion Rate:** 0% (0/9 tickets)
+
+### M0 Exit Criteria
+- [ ] Expo project runs on iOS Simulator & Android Emulator
+- [ ] Navigation stacks configured (onboarding → main tabs)
+- [ ] AsyncStorage schema v1 initialized
+- [ ] API contracts defined (provider-agnostic adapters documented)
+- [ ] No P0 bugs
+- [ ] ≤2 P1 bugs
+- [ ] Crash rate <5%
+
+---
+
+## M1: Recording + Teleprompter (Oct 21-Nov 3, 2025)
+
+| Ticket | Owner | Due | Status | Exit Criteria | Branch |
+|--------|-------|-----|--------|---------------|--------|
+| **B1** | FE Dev 1 | Oct 23 | ⏳ Pending | Camera/mic permissions, error states, Settings deep link | feature/capture-B1-permissions |
+| **B2** | FE Dev 1 | Oct 26 | ⏳ Pending | Portrait 1080x1920@30fps, 120s auto-stop, storage checks | feature/capture-B2-video-capture |
+| **B3** | FE Dev 1 | Oct 31 | ⏳ Pending | Teleprompter overlay: opacity 0.55, WPM 80-200, font S/M/L | feature/capture-B3-teleprompter |
+| **B4** | FE Dev 1 | Nov 3 | ⏳ Pending | State machine: Idle → Recording ↔ Paused → Reviewing | feature/capture-B4-state-machine |
+| **C2** | FE Dev 2 | Oct 28 | ⏳ Pending | FileSystem paths: raw/, processed/, temp/, cleanup logic | feature/storage-C2-filesystem |
+| **C3** | FE Dev 2 | Nov 1 | ⏳ Pending | Video metadata CRUD, query utils, unit tests ≥90% | feature/storage-C3-metadata-crud |
+
+### M1 Burnup
+- **Planned Story Points:** 68h (B1:6h, B2:16h, B3:20h, B4:12h, C2:10h, C3:6h)
+- **Completed Story Points:** 0h
+- **Completion Rate:** 0% (0/6 tickets)
+
+---
+
+## M2: Processing Pipeline POC (Nov 4-17, 2025)
+
+| Ticket | Owner | Due | Status | Exit Criteria | Branch |
+|--------|-------|-----|--------|---------------|--------|
+| **D1** | BEI | Nov 7 | ⏳ Pending | Upload adapter: resumable multipart, progress tracking | feature/backend-D1-upload-adapter |
+| **D2** | BEI | Nov 10 | ⏳ Pending | AssemblyAI transcription, Deepgram fallback, webhook handling | feature/backend-D2-transcription |
+| **D3** | BEI | Nov 12 | ⏳ Pending | Filler-word detection: precision >90%, recall >85% | feature/backend-D3-filler-detection |
+| **D4** | BEI | Nov 15 | ⏳ Pending | Shotstack composition: cuts, intro/outro, subtitles | feature/backend-D4-composition |
+| **D5** | BEI | Nov 17 | ⏳ Pending | Mux encoding: H.264, 1080x1920, checksum validation | feature/backend-D5-encoding |
+| **D6** | BEI | Nov 17 | ⏳ Pending | Job orchestration state machine: parallel transcription, sequential composition | feature/backend-D6-orchestration |
+| **D7** | BEI | Nov 8 | ⏳ Pending | Background removal adapter stub (deferred to Phase 2) | feature/backend-D7-bg-removal-stub |
+| **D8** | BEI | Nov 14 | ⏳ Pending | AI script generation: GPT-4o + moderation, Claude fallback | feature/backend-D8-ai-script-gen |
+
+### M2 Burnup
+- **Planned Story Points:** 84h (D1:14h, D2:12h, D3:10h, D4:16h, D5:10h, D6:18h, D7:4h, D8:14h)
+- **Completed Story Points:** 0h
+- **Completion Rate:** 0% (0/8 tickets)
+
+---
+
+## M3: Feature Selection & Preview (Nov 18-24, 2025)
+
+| Ticket | Owner | Due | Status | Exit Criteria | Branch |
+|--------|-------|-----|--------|---------------|--------|
+| **TBD** | FE | Nov 24 | ⏳ Pending | Feature selection screen, processing job state machine, preview player | feature/app-M3-features-preview |
+
+### M3 Burnup
+- **Planned Story Points:** 16h
+- **Completed Story Points:** 0h
+- **Completion Rate:** 0%
+
+---
+
+## M4: Export & Reliability (Nov 25-Dec 1, 2025)
+
+| Ticket | Owner | Due | Status | Exit Criteria | Branch |
+|--------|-------|-----|--------|---------------|--------|
+| **TBD** | FE | Dec 1 | ⏳ Pending | Native share sheet, offline mode, error states, retry logic | feature/app-M4-export-reliability |
+
+### M4 Burnup
+- **Planned Story Points:** 20h
+- **Completed Story Points:** 0h
+- **Completion Rate:** 0%
+
+---
+
+## M5: Beta Hardening (Dec 2-15, 2025)
+
+| Ticket | Owner | Due | Status | Exit Criteria | Branch |
+|--------|-------|-----|--------|---------------|--------|
+| **TBD** | QA | Dec 15 | ⏳ Pending | All acceptance criteria met, <5% crash rate, ≥90% processing success | feature/qa-M5-beta-hardening |
+
+### M5 Burnup
+- **Planned Story Points:** 40h
+- **Completed Story Points:** 0h
+- **Completion Rate:** 0%
+
+---
+
+## Overall Progress
+
+| Milestone | Duration | Tickets | Completed | Status |
+|-----------|----------|---------|-----------|--------|
+| **M0** | Oct 7-20 | 9 | 0 | 🔵 In Progress |
+| **M1** | Oct 21-Nov 3 | 6 | 0 | ⏳ Pending |
+| **M2** | Nov 4-17 | 8 | 0 | ⏳ Pending |
+| **M3** | Nov 18-24 | 1 | 0 | ⏳ Pending |
+| **M4** | Nov 25-Dec 1 | 1 | 0 | ⏳ Pending |
+| **M5** | Dec 2-15 | 1 | 0 | ⏳ Pending |
+
+**Total Progress:** 0/26 tickets (0%)
+
+---
+
+## Critical Path
+```
+A0 → A1 → A2 → A3 → A4 → F1 (M0 exit)
+     ↓
+    C1 (parallel to A2-A4)
+     ↓
+B1 → B2 → B3 → B4 (M1 recording)
+     ↓
+C2 → C3 (M1 storage)
+     ↓
+D1 → D2 → D3 → D4 → D5 → D6 (M2 pipeline)
+     ↓
+[M3 features] → [M4 export] → [M5 beta]
+```
+
+---
+
+## Risk Register Summary
+See `.orchestrator/risks.md` for details.
+
+**Active Risks:**
+- **R-001:** Expo SDK 54 migration issues (Low likelihood, High impact)
+
+---
+
+**Next Actions:**
+1. ENG-LEAD: Complete A0 (architecture docs, CODEOWNERS, PR template)
+2. PD: Complete E1 (design system, 10 M0 screens in Figma)
+3. FE: Complete A1 (Expo init, navigation, AsyncStorage v1)
+4. PM: Schedule mid-review (Oct 14) & exit review (Oct 20)
