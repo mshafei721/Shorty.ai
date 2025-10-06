@@ -9,7 +9,10 @@
       "Bash(netstat:*)",
       "Bash(taskkill:*)",
       "Bash(gh pr:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(gh run view:*)",
+      "Bash(gh run list:*)",
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "ask": []
