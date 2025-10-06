@@ -1,10 +1,15 @@
 {
+<<<<<<< Updated upstream
   "compilerOptions": {
     "target": "esnext",
     "lib": ["esnext"],
     "allowJs": true,
     "jsx": "react-native",
     "module": "esnext",
+=======
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+>>>>>>> Stashed changes
     "strict": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
@@ -24,8 +29,26 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
+<<<<<<< Updated upstream
     "noEmit": true
   },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
+=======
+    "jsx": "react-native",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+>>>>>>> Stashed changes
 }

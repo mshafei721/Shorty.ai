@@ -28,6 +28,14 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+<<<<<<< Updated upstream
+=======
+    },
+    "extra": {
+      "eas": {
+        "projectId": "shorty-ai-mvp"
+      }
+>>>>>>> Stashed changes
     }
   }
 }

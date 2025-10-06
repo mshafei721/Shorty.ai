@@ -1,11 +1,15 @@
 {
   "permissions": {
     "allow": [
+<<<<<<< Updated upstream
       "Bash(npx expo install:*)",
       "Bash(cat:*)",
       "Bash(npx tsc:*)",
       "Bash(git reset:*)",
       "Bash(gh pr create:*)"
+=======
+      "Bash(git fetch:*)"
+>>>>>>> Stashed changes
     ],
     "deny": [],
     "ask": []
