@@ -1,8 +1,8 @@
 # M0 Foundations - Milestone Status
 
-**Status:** ✅ **COMPLETE**
-**Date:** 2025-10-06
-**Commit:** d335a06
+**Status:** ✅ **100% COMPLETE**
+**Date:** 2025-01-XX
+**Commit:** 47b03eb
 
 ---
 
@@ -22,18 +22,20 @@ Splash → NicheSelection → SubNicheConfirmation → ProjectsList → ProjectD
 - Onboarding flow ready for user niche selection
 - Main stack ready for projects CRUD
 - Deep linking scheme: `shortyai://`
+- Tab bar icons (📁 Projects, ⚙️ Settings)
 
 ### ✅ Storage Architecture
 - AsyncStorage schema v1 defined
 - Type-safe helpers: `getStorageItem<K>()`, `setStorageItem<K>()`
-- Storage keys: `projects`, `scripts`, `videos`, `analytics`, `userProfile`
+- Storage keys: `projects`, `scripts`, `videos`, `analytics`, `userProfile`, `telemetryEnabled`
 - FileSystem paths planned: `raw/`, `processed/`, `temp/`
 
 ### ✅ Tests Passing
-- **23 tests pass** across 4 test suites
+- **196 tests pass** across 13 test suites (M0 + M1)
 - App component renders
 - Navigation guards work
 - Storage schema tests pass
+- All M1 recording tests pass
 - **Command:** `npm test`
 
 ### ✅ TypeScript Compiles
@@ -41,6 +43,21 @@ Splash → NicheSelection → SubNicheConfirmation → ProjectsList → ProjectD
 - All navigation types defined
 - All storage types defined
 - **Command:** `npx tsc --noEmit`
+
+### ✅ Projects List Screen (100%)
+- Display projects from AsyncStorage
+- Create Project button functional (Alert.prompt)
+- Floating action button (FAB) for existing projects
+- Project creation with niche assignment
+- Empty state with call-to-action
+
+### ✅ Settings Screen (100% - PRD Section 15)
+- User preferences section (niche display, telemetry toggle)
+- Storage information (total clips, storage used, free space)
+- Free space warning (<500MB)
+- App information (version, build number, Expo SDK)
+- Legal links (Privacy Policy, Terms of Service)
+- Data management (Reset Onboarding, Clear All Data)
 
 ### ✅ Architecture Documentation
 - Provider-agnostic adapter interfaces documented

@@ -64,6 +64,17 @@ jest.mock('expo-file-system/legacy', () => ({
   getFreeDiskStorageAsync: jest.fn(),
 }));
 
+jest.mock('expo-file-system', () => ({
+  __esModule: true,
+  documentDirectory: 'file:///mock/',
+  getInfoAsync: jest.fn(),
+  makeDirectoryAsync: jest.fn(),
+  readDirectoryAsync: jest.fn(),
+  deleteAsync: jest.fn(),
+  copyAsync: jest.fn(),
+  getFreeDiskStorageAsync: jest.fn(() => Promise.resolve(5000000000)), // 5GB
+}));
+
 jest.mock('expo-camera', () => {
   const React = require('react');
   const { View } = require('react-native');
