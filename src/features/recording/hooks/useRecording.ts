@@ -12,6 +12,7 @@ import { RecordingMachine, RecordingState } from '../fsm/recordingMachine';
 import { createVideoMetadata } from '../api/videoMetadata';
 import * as FileSystem from 'expo-file-system/legacy';
 import { generateRawVideoFilename } from '../../../utils/fileNaming';
+import { trackEvent } from '../../../analytics/telemetry';
 
 export interface UseRecordingOptions {
   projectId?: string;
@@ -48,6 +49,7 @@ export function useRecording(options: UseRecordingOptions = {}): RecordingContro
   const countdownTimerRef = useRef<NodeJS.Timeout | null>(null);
   const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number | null>(null);
+  const videoIdRef = useRef<string>(`video-${Date.now()}`);
 
   // Initialize FSM
   useEffect(() => {
@@ -112,6 +114,14 @@ export function useRecording(options: UseRecordingOptions = {}): RecordingContro
   const startRecordingTimer = useCallback(() => {
     startTimeRef.current = Date.now();
 
+    // Track recording started event
+    trackEvent({
+      type: 'record_started',
+      projectId,
+      scriptId: scriptId || '',
+      timestamp: new Date().toISOString(),
+    });
+
     recordingTimerRef.current = setInterval(() => {
       if (!startTimeRef.current || !machineRef.current) return;
 
@@ -124,31 +134,61 @@ export function useRecording(options: UseRecordingOptions = {}): RecordingContro
         machineRef.current.send({ type: 'RECORD_TIMEOUT' });
       }
     }, 100); // Update every 100ms for smooth timer display
-  }, [maxDurationMs]);
+  }, [maxDurationMs, projectId, scriptId]);
 
   // Pause recording
   const pauseRecording = useCallback(() => {
     machineRef.current?.send({ type: 'RECORD_PAUSE' });
     clearTimers();
-  }, [clearTimers]);
+
+    trackEvent({
+      type: 'record_paused',
+      projectId,
+      videoId: videoIdRef.current,
+      timestamp: new Date().toISOString(),
+    });
+  }, [clearTimers, projectId]);
 
   // Resume recording
   const resumeRecording = useCallback(() => {
     machineRef.current?.send({ type: 'RECORD_RESUME' });
     startRecordingTimer();
-  }, [startRecordingTimer]);
+
+    trackEvent({
+      type: 'record_resumed',
+      projectId,
+      videoId: videoIdRef.current,
+      timestamp: new Date().toISOString(),
+    });
+  }, [startRecordingTimer, projectId]);
 
   // Stop recording
   const stopRecording = useCallback(() => {
     clearTimers();
     machineRef.current?.send({ type: 'RECORD_STOP' });
-  }, [clearTimers]);
+
+    // Track cancelled event (user stopped recording)
+    trackEvent({
+      type: 'record_cancelled',
+      projectId,
+      reason: 'user',
+      timestamp: new Date().toISOString(),
+    });
+  }, [clearTimers, projectId]);
 
   // Abort countdown
   const abortCountdown = useCallback(() => {
     clearTimers();
     machineRef.current?.send({ type: 'COUNTDOWN_ABORT' });
-  }, [clearTimers]);
+
+    // Track cancelled event (user aborted countdown)
+    trackEvent({
+      type: 'record_cancelled',
+      projectId,
+      reason: 'user',
+      timestamp: new Date().toISOString(),
+    });
+  }, [clearTimers, projectId]);
 
   // Retake
   const retake = useCallback(() => {
@@ -198,11 +238,29 @@ export function useRecording(options: UseRecordingOptions = {}): RecordingContro
         processingStatus: 'raw',
       });
 
+      // Track recording completed event
+      trackEvent({
+        type: 'record_completed',
+        projectId,
+        videoId,
+        durationSec: Math.floor(context.elapsedMs / 1000),
+        timestamp: new Date().toISOString(),
+      });
+
       // Transition to accept (would navigate away)
       machineRef.current.send({ type: 'REVIEW_ACCEPT' });
     } catch (error) {
       console.error('Failed to save recording:', error);
       onError?.('Failed to save recording');
+
+      // Track cancelled event (error occurred)
+      trackEvent({
+        type: 'record_cancelled',
+        projectId,
+        reason: 'error',
+        timestamp: new Date().toISOString(),
+      });
+
       machineRef.current.send({
         type: 'RECORD_ERROR',
         error: error instanceof Error ? error.message : 'Unknown error',
