@@ -12,7 +12,9 @@
       "Bash(git add:*)",
       "Bash(gh run view:*)",
       "Bash(gh run list:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(npx expo install:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

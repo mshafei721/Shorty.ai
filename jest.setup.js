@@ -77,10 +77,8 @@ jest.mock('expo-camera', () => ({
   },
 }));
 
-jest.mock('expo-av', () => ({
+jest.mock('expo-audio', () => ({
   __esModule: true,
-  Audio: {
-    getPermissionsAsync: jest.fn(),
-    requestPermissionsAsync: jest.fn(),
-  },
+  requestRecordingPermissionsAsync: jest.fn(),
+  getRecordingPermissionsAsync: jest.fn(),
 }));
