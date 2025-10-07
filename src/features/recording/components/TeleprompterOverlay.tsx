@@ -90,13 +90,15 @@ export function TeleprompterOverlay({
   };
 
   const handleRewind = () => {
-    scrollPosition.setValue(Math.max(0, scrollPosition._value - 500));
+    // Stop current animation and rewind by restarting from earlier position
+    stopScrolling();
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollTo({
-        y: Math.max(0, scrollPosition._value - 500),
+        y: 0,
         animated: true,
       });
     }
+    scrollPosition.setValue(0);
   };
 
   const handleWpmDecrease = () => {

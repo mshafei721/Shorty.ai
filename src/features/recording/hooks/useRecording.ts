@@ -14,8 +14,9 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { generateRawVideoFilename } from '../../../utils/fileNaming';
 
 export interface UseRecordingOptions {
-  projectId: string;
-  scriptId: string | null;
+  projectId?: string;
+  scriptId?: string | null;
+  maxDurationMs?: number;
   onStateChange?: (state: RecordingState) => void;
   onError?: (error: string) => void;
 }
@@ -35,8 +36,8 @@ export interface RecordingControls {
   filePath: string | null;
 }
 
-export function useRecording(options: UseRecordingOptions): RecordingControls {
-  const { projectId, scriptId, onStateChange, onError } = options;
+export function useRecording(options: UseRecordingOptions = {}): RecordingControls {
+  const { projectId = 'default', scriptId = null, maxDurationMs = 120000, onStateChange, onError } = options;
 
   const [state, setState] = useState<RecordingState>('idle');
   const [countdown, setCountdown] = useState(3);
@@ -117,13 +118,13 @@ export function useRecording(options: UseRecordingOptions): RecordingControls {
       const elapsed = Date.now() - startTimeRef.current;
       machineRef.current.send({ type: 'RECORD_TICK', elapsedMs: elapsed });
 
-      // Auto-stop at 120s
-      if (elapsed >= 120000) {
+      // Auto-stop at max duration
+      if (elapsed >= maxDurationMs) {
         stopRecording();
         machineRef.current.send({ type: 'RECORD_TIMEOUT' });
       }
     }, 100); // Update every 100ms for smooth timer display
-  }, []);
+  }, [maxDurationMs]);
 
   // Pause recording
   const pauseRecording = useCallback(() => {
@@ -213,7 +214,7 @@ export function useRecording(options: UseRecordingOptions): RecordingControls {
     state,
     countdown,
     elapsedMs,
-    maxDurationMs: 120000,
+    maxDurationMs,
     startRecording,
     pauseRecording,
     resumeRecording,
