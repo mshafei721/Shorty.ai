@@ -19,11 +19,10 @@ describe('CameraPreview', () => {
   });
 
   describe('Idle State', () => {
-    it('renders camera preview placeholder', () => {
-      const { getByText } = render(<CameraPreview {...mockProps} />);
+    it('renders camera preview', () => {
+      const { getByTestId } = render(<CameraPreview {...mockProps} />);
 
-      expect(getByText(/Camera Preview/)).toBeTruthy();
-      expect(getByText(/1080×1920 @ 30fps/)).toBeTruthy();
+      expect(getByTestId('camera-view')).toBeTruthy();
     });
 
     it('shows start button when not recording', () => {

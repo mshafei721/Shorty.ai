@@ -7,8 +7,9 @@
  * @module features/recording/components/CameraPreview
  */
 
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { Camera, CameraView, CameraType, FlashMode } from 'expo-camera';
 
 export interface CameraPreviewProps {
   isRecording: boolean;
@@ -40,17 +41,47 @@ export function CameraPreview({
 }: CameraPreviewProps) {
   const remainingMs = maxDurationMs - elapsedMs;
   const isNearEnd = remainingMs <= 15000 && remainingMs > 0;
+  const cameraRef = useRef<CameraView>(null);
+  const [isRecordingActive, setIsRecordingActive] = useState(false);
+
+  const handleStartRecording = async () => {
+    if (!cameraRef.current) {
+      Alert.alert('Error', 'Camera not ready');
+      return;
+    }
+
+    try {
+      setIsRecordingActive(true);
+      onStartPress();
+      // Actual recording will be started by useRecording hook
+    } catch (error) {
+      console.error('Failed to start recording:', error);
+      Alert.alert('Error', 'Failed to start recording');
+      setIsRecordingActive(false);
+    }
+  };
+
+  const handleStopRecording = async () => {
+    try {
+      setIsRecordingActive(false);
+      onStopPress();
+      // Actual recording will be stopped by useRecording hook
+    } catch (error) {
+      console.error('Failed to stop recording:', error);
+    }
+  };
 
   return (
     <View style={styles.container}>
-      {/* Camera Preview Placeholder */}
-      <View style={styles.preview}>
-        <Text style={styles.previewText}>
-          Camera Preview
-          {'\n'}
-          1080×1920 @ 30fps
-        </Text>
-      </View>
+      {/* Camera Preview */}
+      <CameraView
+        ref={cameraRef}
+        style={styles.preview}
+        facing="back"
+        mode="video"
+      >
+        {/* Empty - camera view fills container */}
+      </CameraView>
 
       {/* Recording Indicator */}
       {isRecording && (
@@ -88,7 +119,7 @@ export function CameraPreview({
           <TouchableOpacity
             testID="start-button"
             style={styles.startButton}
-            onPress={onStartPress}
+            onPress={handleStartRecording}
           >
             <View style={styles.startButtonInner} />
           </TouchableOpacity>
@@ -110,7 +141,7 @@ export function CameraPreview({
             <TouchableOpacity
               testID="stop-button"
               style={styles.stopButton}
-              onPress={onStopPress}
+              onPress={handleStopRecording}
             >
               <View style={styles.stopButtonInner} />
             </TouchableOpacity>
@@ -130,7 +161,7 @@ export function CameraPreview({
             <TouchableOpacity
               testID="stop-button"
               style={styles.stopButton}
-              onPress={onStopPress}
+              onPress={handleStopRecording}
             >
               <View style={styles.stopButtonInner} />
             </TouchableOpacity>
