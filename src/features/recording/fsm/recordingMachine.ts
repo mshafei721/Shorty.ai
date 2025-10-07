@@ -263,7 +263,7 @@ export class RecordingMachine {
   private executeSideEffects(
     from: RecordingState,
     to: RecordingState,
-    event: RecordingEvent
+    _event: RecordingEvent
   ): void {
     // Entry effects
     if (to === 'countdown') {

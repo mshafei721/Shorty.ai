@@ -2,11 +2,9 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   StyleSheet,
   AppState,
   AppStateStatus,
-  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -36,7 +34,7 @@ export default function RecordScreen() {
   );
   const [wpm, setWpm] = useState(140);
   const [fontSize, setFontSize] = useState(18);
-  const [showTeleprompter, setShowTeleprompter] = useState(true);
+  const showTeleprompter = true;
 
   // Recording FSM
   const recording = useRecording({
