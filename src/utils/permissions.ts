@@ -1,5 +1,5 @@
-import { Camera, CameraPermissionStatus } from 'expo-camera';
-import { Audio, PermissionStatus } from 'expo-av';
+import { Camera, PermissionStatus } from 'expo-camera';
+import { Audio } from 'expo-av';
 import { Linking, Platform } from 'react-native';
 
 export type PermissionResult = 'granted' | 'denied' | 'blocked';
