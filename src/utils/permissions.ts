@@ -1,5 +1,5 @@
 import { Camera, PermissionStatus } from 'expo-camera';
-import { Audio } from 'expo-av';
+import { requestRecordingPermissionsAsync, getRecordingPermissionsAsync } from 'expo-audio';
 import { Linking, Platform } from 'react-native';
 
 export type PermissionResult = 'granted' | 'denied' | 'blocked';
@@ -7,7 +7,7 @@ export type PermissionResult = 'granted' | 'denied' | 'blocked';
 export async function requestCameraPermissions(): Promise<PermissionResult> {
   try {
     const cameraResult = await Camera.requestCameraPermissionsAsync();
-    const audioResult = await Audio.requestPermissionsAsync();
+    const audioResult = await requestRecordingPermissionsAsync();
 
     if (cameraResult.status === 'granted' && audioResult.status === 'granted') {
       return 'granted';
@@ -27,7 +27,7 @@ export async function requestCameraPermissions(): Promise<PermissionResult> {
 export async function checkCameraPermissions(): Promise<PermissionResult> {
   try {
     const cameraResult = await Camera.getCameraPermissionsAsync();
-    const audioResult = await Audio.getPermissionsAsync();
+    const audioResult = await getRecordingPermissionsAsync();
 
     if (cameraResult.status === 'granted' && audioResult.status === 'granted') {
       return 'granted';

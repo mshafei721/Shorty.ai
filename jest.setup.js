@@ -64,23 +64,38 @@ jest.mock('expo-file-system/legacy', () => ({
   getFreeDiskStorageAsync: jest.fn(),
 }));
 
-jest.mock('expo-camera', () => ({
-  __esModule: true,
-  Camera: {
-    getCameraPermissionsAsync: jest.fn(),
-    requestCameraPermissionsAsync: jest.fn(),
-  },
-  PermissionStatus: {
-    GRANTED: 'granted',
-    DENIED: 'denied',
-    UNDETERMINED: 'undetermined',
-  },
-}));
+jest.mock('expo-camera', () => {
+  const React = require('react');
+  const { View } = require('react-native');
 
-jest.mock('expo-av', () => ({
+  return {
+    __esModule: true,
+    Camera: {
+      getCameraPermissionsAsync: jest.fn(),
+      requestCameraPermissionsAsync: jest.fn(),
+    },
+    CameraView: React.forwardRef((props, ref) => {
+      return React.createElement(View, { ...props, ref, testID: 'camera-view' }, props.children);
+    }),
+    CameraType: {
+      back: 'back',
+      front: 'front',
+    },
+    FlashMode: {
+      on: 'on',
+      off: 'off',
+      auto: 'auto',
+    },
+    PermissionStatus: {
+      GRANTED: 'granted',
+      DENIED: 'denied',
+      UNDETERMINED: 'undetermined',
+    },
+  };
+});
+
+jest.mock('expo-audio', () => ({
   __esModule: true,
-  Audio: {
-    getPermissionsAsync: jest.fn(),
-    requestPermissionsAsync: jest.fn(),
-  },
+  requestRecordingPermissionsAsync: jest.fn(),
+  getRecordingPermissionsAsync: jest.fn(),
 }));

@@ -2,11 +2,9 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   StyleSheet,
   AppState,
   AppStateStatus,
-  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -17,6 +15,9 @@ import {
 } from '../utils/permissions';
 import { PermissionModal } from '../components/PermissionModal';
 import { PermissionBanner } from '../components/PermissionBanner';
+import { useRecording } from '../features/recording/hooks/useRecording';
+import { CameraPreview } from '../features/recording/components/CameraPreview';
+import { TeleprompterOverlay } from '../features/recording/components/TeleprompterOverlay';
 
 type NavigationProp = StackNavigationProp<any>;
 
@@ -26,6 +27,22 @@ export default function RecordScreen() {
   const [showModal, setShowModal] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
   const [isCheckingPermissions, setIsCheckingPermissions] = useState(true);
+
+  // Recording state
+  const [scriptText] = useState(
+    'This is a sample script for testing the teleprompter. You can read along as it scrolls automatically during recording. The speed can be adjusted using the controls below.'
+  );
+  const [wpm, setWpm] = useState(140);
+  const [fontSize, setFontSize] = useState(18);
+  const showTeleprompter = true;
+
+  // Recording FSM
+  const recording = useRecording({
+    maxDurationMs: 120000,
+    onStateChange: (state) => {
+      console.log('Recording state changed:', state);
+    },
+  });
 
   const checkPermissions = async () => {
     const status = await checkCameraPermissions();
@@ -92,12 +109,20 @@ export default function RecordScreen() {
     setShowBanner(false);
   };
 
-  const handleTestPermissions = () => {
-    Alert.alert(
-      'Permissions Test',
-      'Camera and microphone permissions are granted!',
-      [{ text: 'OK', style: 'default' }]
-    );
+  const handleStartRecording = () => {
+    recording.startRecording();
+  };
+
+  const handleStopRecording = () => {
+    recording.stopRecording();
+  };
+
+  const handlePauseRecording = () => {
+    recording.pauseRecording();
+  };
+
+  const handleResumeRecording = () => {
+    recording.resumeRecording();
   };
 
   if (isCheckingPermissions) {
@@ -122,16 +147,29 @@ export default function RecordScreen() {
       />
 
       {permissionStatus === 'granted' ? (
-        <View style={styles.content}>
-          <Text style={styles.placeholderText}>
-            Camera ready. Recording UI coming in B2.
-          </Text>
-          <TouchableOpacity
-            style={styles.testButton}
-            onPress={handleTestPermissions}
-          >
-            <Text style={styles.testButtonText}>Test Permissions</Text>
-          </TouchableOpacity>
+        <View style={styles.recordingContainer}>
+          <CameraPreview
+            isRecording={recording.state === 'recording' || recording.state === 'paused'}
+            isPaused={recording.state === 'paused'}
+            elapsedMs={recording.elapsedMs}
+            maxDurationMs={120000}
+            onStartPress={handleStartRecording}
+            onStopPress={handleStopRecording}
+            onPausePress={handlePauseRecording}
+            onResumePress={handleResumeRecording}
+          />
+
+          {showTeleprompter && (
+            <TeleprompterOverlay
+              scriptText={scriptText}
+              isPlaying={recording.state === 'recording'}
+              wpm={wpm}
+              fontSize={fontSize}
+              onWpmChange={setWpm}
+              onFontSizeChange={setFontSize}
+              visible={recording.state !== 'idle'}
+            />
+          )}
         </View>
       ) : (
         <View style={styles.content}>
@@ -149,6 +187,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
+  recordingContainer: {
+    flex: 1,
+    backgroundColor: '#000000',
+  },
   content: {
     flex: 1,
     justifyContent: 'center',
@@ -165,16 +207,5 @@ const styles = StyleSheet.create({
     color: '#374151',
     textAlign: 'center',
     marginBottom: 24,
-  },
-  testButton: {
-    backgroundColor: '#3B82F6',
-    paddingVertical: 14,
-    paddingHorizontal: 28,
-    borderRadius: 8,
-  },
-  testButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FFFFFF',
   },
 });

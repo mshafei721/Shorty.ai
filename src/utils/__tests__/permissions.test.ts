@@ -14,11 +14,9 @@ jest.mock('expo-camera', () => ({
   },
 }));
 
-jest.mock('expo-av', () => ({
-  Audio: {
-    requestPermissionsAsync: () => mockRequestAudioPermissions(),
-    getPermissionsAsync: () => mockGetAudioPermissions(),
-  },
+jest.mock('expo-audio', () => ({
+  requestRecordingPermissionsAsync: () => mockRequestAudioPermissions(),
+  getRecordingPermissionsAsync: () => mockGetAudioPermissions(),
 }));
 
 jest.mock('react-native', () => ({
