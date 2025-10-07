@@ -1,0 +1,132 @@
+Test Case,Category,Priority,Device,OS Version,Tester,Status,Date,Pass/Fail,Notes,Bug Ticket
+TC-B1-01,B1-Permissions,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B1-01,B1-Permissions,P0,iPhone 14,iOS 17,QA,Pending,-,-,-,-
+TC-B1-01,B1-Permissions,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B1-01,B1-Permissions,P0,Pixel 7,Android 13,QA,Pending,-,-,-,-
+TC-B1-02,B1-Permissions,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B1-02,B1-Permissions,P0,iPhone 14,iOS 17,QA,Pending,-,-,-,-
+TC-B1-02,B1-Permissions,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B1-02,B1-Permissions,P0,Pixel 7,Android 13,QA,Pending,-,-,-,-
+TC-B1-03,B1-Permissions,P1,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B1-03,B1-Permissions,P1,iPhone 14,iOS 17,QA,Pending,-,-,-,-
+TC-B1-04,B1-Permissions,P1,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B1-04,B1-Permissions,P1,Pixel 7,Android 13,QA,Pending,-,-,-,-
+TC-B1-05,B1-Permissions,P1,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B1-05,B1-Permissions,P1,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B1-06,B1-Permissions,P1,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B1-06,B1-Permissions,P1,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B1-07,B1-Permissions,P2,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B1-07,B1-Permissions,P2,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B2-01,B2-Capture,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B2-01,B2-Capture,P0,iPhone 14,iOS 17,QA,Pending,-,-,-,-
+TC-B2-01,B2-Capture,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B2-01,B2-Capture,P0,Pixel 7,Android 13,QA,Pending,-,-,-,-
+TC-B2-02,B2-Capture,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B2-02,B2-Capture,P0,iPhone 14,iOS 17,QA,Pending,-,-,-,-
+TC-B2-02,B2-Capture,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B2-02,B2-Capture,P0,Pixel 7,Android 13,QA,Pending,-,-,-,-
+TC-B2-03,B2-Capture,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B2-03,B2-Capture,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B2-04,B2-Capture,P1,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B2-04,B2-Capture,P1,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B2-05,B2-Capture,P2,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B2-06,B2-Capture,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B2-06,B2-Capture,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B2-07,B2-Capture,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B2-07,B2-Capture,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B2-08,B2-Capture,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B2-08,B2-Capture,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B3-01,B3-Teleprompter,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B3-01,B3-Teleprompter,P0,iPhone 14,iOS 17,QA,Pending,-,-,-,-
+TC-B3-01,B3-Teleprompter,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B3-01,B3-Teleprompter,P0,Pixel 7,Android 13,QA,Pending,-,-,-,-
+TC-B3-02,B3-Teleprompter,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B3-02,B3-Teleprompter,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B3-03,B3-Teleprompter,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B3-03,B3-Teleprompter,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B3-04,B3-Teleprompter,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B3-04,B3-Teleprompter,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B3-05,B3-Teleprompter,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B3-05,B3-Teleprompter,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B3-06,B3-Teleprompter,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B3-06,B3-Teleprompter,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B3-07,B3-Teleprompter,P1,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B3-07,B3-Teleprompter,P1,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B3-08,B3-Teleprompter,P1,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B3-08,B3-Teleprompter,P1,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B3-09,B3-Teleprompter,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B3-09,B3-Teleprompter,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B3-10,B3-Teleprompter,P0,iPhone 12,iOS 16,QA,Pending,-,-,Measure with Expo DevTools FPS,-
+TC-B3-10,B3-Teleprompter,P0,Pixel 5,Android 12,QA,Pending,-,-,Measure with Expo DevTools FPS,-
+TC-B4-01,B4-StateMachine,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B4-01,B4-StateMachine,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B4-02,B4-StateMachine,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B4-02,B4-StateMachine,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B4-03,B4-StateMachine,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B4-03,B4-StateMachine,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B4-04,B4-StateMachine,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B4-04,B4-StateMachine,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B4-05,B4-StateMachine,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B4-05,B4-StateMachine,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B4-06,B4-StateMachine,P1,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B4-06,B4-StateMachine,P1,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B4-07,B4-StateMachine,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B4-07,B4-StateMachine,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B4-08,B4-StateMachine,P1,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-B4-08,B4-StateMachine,P1,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-B4-09,B4-StateMachine,P2,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-C2-01,C2-FileSystem,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-C2-01,C2-FileSystem,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-C2-02,C2-FileSystem,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-C2-02,C2-FileSystem,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-C2-03,C2-FileSystem,P1,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-C2-03,C2-FileSystem,P1,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-C2-04,C2-FileSystem,P1,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-C2-04,C2-FileSystem,P1,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-C2-05,C2-FileSystem,P2,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-C2-06,C2-FileSystem,P2,iPhone 12,iOS 16,QA,Pending,-,-,Manual setup: Create temp files first,-
+TC-C3-01,C3-Metadata,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-C3-01,C3-Metadata,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-C3-02,C3-Metadata,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-C3-02,C3-Metadata,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-C3-03,C3-Metadata,P0,iPhone 12,iOS 16,QA,Pending,-,-,Unit test + manual verification,-
+TC-C3-03,C3-Metadata,P0,Pixel 5,Android 12,QA,Pending,-,-,Unit test + manual verification,-
+TC-C3-04,C3-Metadata,P0,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-C3-04,C3-Metadata,P0,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-PERF-01,Performance,P0,iPhone 12,iOS 16,QA,Pending,-,-,10 runs - measure p50/p95,-
+TC-PERF-01,Performance,P0,iPhone 14,iOS 17,QA,Pending,-,-,10 runs - measure p50/p95,-
+TC-PERF-01,Performance,P0,Pixel 5,Android 12,QA,Pending,-,-,10 runs - measure p50/p95,-
+TC-PERF-01,Performance,P0,Pixel 7,Android 13,QA,Pending,-,-,10 runs - measure p50/p95,-
+TC-PERF-02,Performance,P0,iPhone 12,iOS 16,QA,Pending,-,-,10 runs - measure p50/p95,-
+TC-PERF-02,Performance,P0,iPhone 14,iOS 17,QA,Pending,-,-,10 runs - measure p50/p95,-
+TC-PERF-02,Performance,P0,Pixel 5,Android 12,QA,Pending,-,-,10 runs - measure p50/p95,-
+TC-PERF-02,Performance,P0,Pixel 7,Android 13,QA,Pending,-,-,10 runs - measure p50/p95,-
+TC-PERF-03,Performance,P0,iPhone 12,iOS 16,QA,Pending,-,-,Expo DevTools FPS monitor 60s,-
+TC-PERF-03,Performance,P0,Pixel 5,Android 12,QA,Pending,-,-,Expo DevTools FPS monitor 60s,-
+TC-PERF-04,Performance,P1,iPhone 12,iOS 16,QA,Pending,-,-,Xcode Instruments or Android Profiler,-
+TC-PERF-04,Performance,P1,Pixel 5,Android 12,QA,Pending,-,-,Xcode Instruments or Android Profiler,-
+TC-PERF-05,Performance,P0,iPhone 12,iOS 16,QA,Pending,-,-,50 sessions distributed across devices,-
+TC-PERF-05,Performance,P0,iPhone 14,iOS 17,QA,Pending,-,-,50 sessions distributed across devices,-
+TC-PERF-05,Performance,P0,Pixel 5,Android 12,QA,Pending,-,-,50 sessions distributed across devices,-
+TC-PERF-05,Performance,P0,Pixel 7,Android 13,QA,Pending,-,-,50 sessions distributed across devices,-
+TC-A11Y-01,Accessibility,P0,iPhone 12,iOS 16,QA,Pending,-,-,VoiceOver enabled - record video,-
+TC-A11Y-01,Accessibility,P0,iPhone 14,iOS 17,QA,Pending,-,-,VoiceOver enabled - record video,-
+TC-A11Y-02,Accessibility,P0,Pixel 5,Android 12,QA,Pending,-,-,TalkBack enabled - record video,-
+TC-A11Y-02,Accessibility,P0,Pixel 7,Android 13,QA,Pending,-,-,TalkBack enabled - record video,-
+TC-A11Y-03,Accessibility,P1,iPhone 12,iOS 16,QA,Pending,-,-,Font scaling 200%,-
+TC-A11Y-03,Accessibility,P1,Pixel 5,Android 12,QA,Pending,-,-,Font scaling 200%,-
+TC-A11Y-04,Accessibility,P0,iPhone 12,iOS 16,QA,Pending,-,-,Measure with Figma plugin,-
+TC-A11Y-04,Accessibility,P0,Pixel 5,Android 12,QA,Pending,-,-,Measure with Figma plugin,-
+TC-A11Y-05,Accessibility,P0,iPhone 12,iOS 16,QA,Pending,-,-,WebAIM Contrast Checker,-
+TC-A11Y-05,Accessibility,P0,Pixel 5,Android 12,QA,Pending,-,-,WebAIM Contrast Checker,-
+TC-A11Y-06,Accessibility,P2,iPhone 12,iOS 16,QA,Pending,-,-,Bluetooth keyboard required,-
+TC-A11Y-06,Accessibility,P2,Pixel 5,Android 12,QA,Pending,-,-,USB-C keyboard required,-
+TC-EDGE-01,EdgeCase,P1,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-EDGE-01,EdgeCase,P1,Pixel 5,Android 12,QA,Pending,-,-,-,-
+TC-EDGE-02,EdgeCase,P1,iPhone 12,iOS 16,QA,Pending,-,-,Requires phone SIM or VoIP,-
+TC-EDGE-02,EdgeCase,P1,Pixel 5,Android 12,QA,Pending,-,-,Requires phone SIM or VoIP,-
+TC-EDGE-03,EdgeCase,P2,iPhone 12,iOS 16,QA,Pending,-,-,Drain battery to <10%,-
+TC-EDGE-04,EdgeCase,P1,iPhone 12,iOS 16,QA,Pending,-,-,Airplane mode,-
+TC-EDGE-04,EdgeCase,P1,Pixel 5,Android 12,QA,Pending,-,-,Airplane mode,-
+TC-EDGE-05,EdgeCase,P2,iPhone 12,iOS 16,QA,Pending,-,-,-,-
+TC-EDGE-05,EdgeCase,P2,Pixel 5,Android 12,QA,Pending,-,-,-,-

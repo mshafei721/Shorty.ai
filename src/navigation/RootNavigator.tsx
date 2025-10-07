@@ -8,10 +8,12 @@ import SplashScreen from '../screens/SplashScreen';
 import NicheSelectionScreen from '../screens/NicheSelectionScreen';
 import ProjectsListScreen from '../screens/ProjectsListScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import RecordScreen from '../screens/RecordScreen';
 
 export type RootStackParamList = {
   Onboarding: undefined;
   Main: undefined;
+  Record: undefined;
 };
 
 export type OnboardingStackParamList = {
@@ -46,6 +48,7 @@ const linking = {
           Settings: 'settings',
         },
       },
+      Record: 'record',
     },
   },
 };
@@ -107,6 +110,15 @@ export function RootNavigator() {
       >
         <RootStack.Screen name="Onboarding" component={OnboardingNavigator} />
         <RootStack.Screen name="Main" component={MainNavigator} />
+        <RootStack.Screen
+          name="Record"
+          component={RecordScreen}
+          options={{
+            headerShown: true,
+            title: 'Record Video',
+            presentation: 'modal'
+          }}
+        />
       </RootStack.Navigator>
     </NavigationContainer>
   );

@@ -52,3 +52,35 @@ jest.mock('expo-linking', () => ({
     createURL: jest.fn((path) => `exp://localhost:8081/${path}`),
   },
 }));
+
+jest.mock('expo-file-system/legacy', () => ({
+  __esModule: true,
+  documentDirectory: 'file:///mock/',
+  getInfoAsync: jest.fn(),
+  makeDirectoryAsync: jest.fn(),
+  readDirectoryAsync: jest.fn(),
+  deleteAsync: jest.fn(),
+  copyAsync: jest.fn(),
+  getFreeDiskStorageAsync: jest.fn(),
+}));
+
+jest.mock('expo-camera', () => ({
+  __esModule: true,
+  Camera: {
+    getCameraPermissionsAsync: jest.fn(),
+    requestCameraPermissionsAsync: jest.fn(),
+  },
+  PermissionStatus: {
+    GRANTED: 'granted',
+    DENIED: 'denied',
+    UNDETERMINED: 'undetermined',
+  },
+}));
+
+jest.mock('expo-av', () => ({
+  __esModule: true,
+  Audio: {
+    getPermissionsAsync: jest.fn(),
+    requestPermissionsAsync: jest.fn(),
+  },
+}));
