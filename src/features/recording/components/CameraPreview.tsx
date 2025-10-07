@@ -7,9 +7,9 @@
  * @module features/recording/components/CameraPreview
  */
 
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { Camera, CameraView, CameraType, FlashMode } from 'expo-camera';
+import { CameraView } from 'expo-camera';
 
 export interface CameraPreviewProps {
   isRecording: boolean;
@@ -42,7 +42,6 @@ export function CameraPreview({
   const remainingMs = maxDurationMs - elapsedMs;
   const isNearEnd = remainingMs <= 15000 && remainingMs > 0;
   const cameraRef = useRef<CameraView>(null);
-  const [isRecordingActive, setIsRecordingActive] = useState(false);
 
   const handleStartRecording = async () => {
     if (!cameraRef.current) {
@@ -51,19 +50,16 @@ export function CameraPreview({
     }
 
     try {
-      setIsRecordingActive(true);
       onStartPress();
       // Actual recording will be started by useRecording hook
     } catch (error) {
       console.error('Failed to start recording:', error);
       Alert.alert('Error', 'Failed to start recording');
-      setIsRecordingActive(false);
     }
   };
 
   const handleStopRecording = async () => {
     try {
-      setIsRecordingActive(false);
       onStopPress();
       // Actual recording will be stopped by useRecording hook
     } catch (error) {

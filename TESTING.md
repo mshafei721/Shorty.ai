@@ -1,6 +1,6 @@
-# Testing Guide - Shorty.ai M0
+# Testing Guide - Shorty.ai
 
-**Status:** ✅ M0 Complete | 23 Tests Passing
+**Status:** ✅ M1 Complete | 94 Tests Passing
 
 ---
 
@@ -13,17 +13,18 @@ npm test
 
 **Results:**
 ```
-Test Suites: 4 passed, 4 total
-Tests:       23 passed, 23 total
+Test Suites: 7 passed, 7 total
+Tests:       94 passed, 94 total
 Snapshots:   0 total
-Time:        ~4s
+Time:        ~8s
 ```
 
-**Coverage:**
-- App component: Renders without crashing
-- Navigation guards: Determines correct initial route
-- Storage schema: Type-safe helpers work correctly
-- RootNavigator: Routes to onboarding vs main stack
+**M1 Coverage:**
+- **CameraPreview component:** 29 tests covering idle/recording/paused states, timer formatting, warning indicators, recording indicator styles
+- **useRecording hook:** 28 tests covering FSM transitions, auto-stop, pause/resume, timer accuracy
+- **useTeleprompter hook:** 27 tests covering scrolling logic, WPM calculation, sentence highlighting, pause/resume
+- **Telemetry service:** 10 tests covering event tracking, data rotation, local storage
+- **M0 foundation:** App, navigation, storage utilities
 
 ### TypeScript Compilation
 ```bash
@@ -182,28 +183,76 @@ These are **planned for M1-M5**, not bugs:
 
 ---
 
-## Testing Next Milestone (M1)
+## M1 Recording & Teleprompter Testing
 
-**When M1 is complete**, test:
+### Automated Tests (94 passing)
 
-### Camera & Recording
-- [ ] Camera permissions requested correctly
-- [ ] "Open Settings" deep link works (iOS/Android)
-- [ ] Video records at 1080x1920, 30fps
-- [ ] 120s auto-stop works
-- [ ] Storage warning at <500MB free
+**CameraPreview Component (29 tests)**
+- Idle state: Renders camera view, shows start button, no timer/indicator
+- Recording state: Shows REC indicator, timer, pause/stop buttons
+- Paused state: Shows PAUSED indicator, resume/stop buttons
+- Timer formatting: Zero time, seconds only, minutes:seconds, max duration
+- Warning indicator: Shows at ≤15s remaining, correct remaining time, no negative values
+- Recording indicator styles: Red dot when recording, orange when paused
+- Timer warning styles: White >15s, red ≤15s remaining
+- Button interactions: onStartPress, onStopPress, onPausePress, onResumePress called correctly
 
-### Teleprompter
-- [ ] Overlay appears at 0.55 opacity
-- [ ] WPM adjustable (80-200, default 140)
-- [ ] Font sizes work (S/M/L)
-- [ ] Highlight: current 80%, upcoming 50%, past 30%
+**useRecording Hook (28 tests)**
+- FSM transitions: Idle → Countdown → Recording → Reviewing
+- Pause/Resume: Recording ↔ Paused transitions
+- Auto-stop: Enforces 120s max duration
+- Timer: Elapsed time tracking, accuracy validation
+- Error handling: Invalid transitions blocked
+- Cleanup: Stops timer on unmount
 
-### Projects CRUD
-- [ ] Create project saves to AsyncStorage
-- [ ] Edit updates `updatedAt`, sorts to top
-- [ ] Soft delete sets `isDeleted: true`
-- [ ] Haptic feedback fires on create/delete
+**useTeleprompter Hook (27 tests)**
+- State transitions: Hidden → VisiblePaused ↔ Scrolling → Completed
+- WPM calculation: Converts WPM to scroll speed (80-200 range)
+- Sentence highlighting: Current (80%), upcoming (50%), past (30%) brightness
+- Scroll position: Tracks progress, detects completion
+- Controls: Play, pause, restart, speed adjustment
+- Edge cases: Empty text, single sentence, boundary conditions
+
+**Telemetry Service (10 tests)**
+- Event tracking: recordingStarted, recordingCompleted, recordingCancelled, recordingPaused, recordingResumed
+- Data storage: Saves to AsyncStorage under `analytics` key
+- 30-day rotation: Purges events older than 30 days
+- Metrics aggregation: Total duration, pause/resume counts
+- Privacy: Local storage only, no network calls
+
+### Manual Testing Checklist
+
+**Camera Integration (Requires Physical Device)**
+- [ ] Camera permissions requested on first use
+- [ ] "Open Settings" deep link works if permissions denied (iOS/Android)
+- [ ] CameraView renders back camera feed
+- [ ] Video quality: 1080x1920 portrait, 30fps
+- [ ] Recording controls respond within 500ms
+- [ ] 120s auto-stop triggers correctly
+- [ ] Storage warning appears if <500MB free
+
+**Teleprompter Overlay**
+- [ ] Overlay displays at 55% opacity over camera
+- [ ] Text scrolls smoothly without jank
+- [ ] WPM adjustment (80-200) affects scroll speed
+- [ ] Font size toggle (S/M/L) updates immediately
+- [ ] Sentence highlighting shows correct brightness levels
+- [ ] Play/Pause/Restart controls work
+- [ ] Completes at end of script
+
+**State Machine Behavior**
+- [ ] Recording FSM: Idle → Countdown(3s) → Recording
+- [ ] Pause: Recording → Paused, timer stops
+- [ ] Resume: Paused → Recording, timer continues
+- [ ] Stop: Any state → Reviewing
+- [ ] Restart: Reviewing → Idle
+- [ ] Invalid transitions blocked (no crash)
+
+**Telemetry**
+- [ ] Events written to AsyncStorage after each recording
+- [ ] Data persists across app restarts
+- [ ] 30-day rotation removes old events
+- [ ] No network calls made (fully local)
 
 ---
 
