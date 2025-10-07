@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -64,16 +65,31 @@ function OnboardingNavigator() {
 
 function MainNavigator() {
   return (
-    <MainTabs.Navigator>
+    <MainTabs.Navigator
+      screenOptions={{
+        tabBarActiveTintColor: '#007AFF',
+        tabBarInactiveTintColor: '#8E8E93',
+      }}
+    >
       <MainTabs.Screen
         name="ProjectsList"
         component={ProjectsListScreen}
-        options={{ title: 'Projects' }}
+        options={{
+          title: 'Projects',
+          tabBarIcon: ({ color, size }) => (
+            <Text style={{ fontSize: size, color }}>📁</Text>
+          ),
+        }}
       />
       <MainTabs.Screen
         name="Settings"
         component={SettingsScreen}
-        options={{ title: 'Settings' }}
+        options={{
+          title: 'Settings',
+          tabBarIcon: ({ color, size }) => (
+            <Text style={{ fontSize: size, color }}>⚙️</Text>
+          ),
+        }}
       />
     </MainTabs.Navigator>
   );

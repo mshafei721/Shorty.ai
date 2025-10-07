@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -41,6 +41,58 @@ export default function ProjectsListScreen() {
     }
   };
 
+  const handleCreateProject = () => {
+    if (Platform.OS === 'web') {
+      // Web fallback - prompt not supported
+      Alert.alert('Create Project', 'Project creation requires native platform', [{ text: 'OK' }]);
+      return;
+    }
+
+    Alert.prompt(
+      'Create New Project',
+      'Enter project name:',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Create',
+          onPress: async (projectName?: string) => {
+            if (!projectName || projectName.trim().length === 0) {
+              Alert.alert('Error', 'Project name cannot be empty');
+              return;
+            }
+
+            try {
+              const userProfileData = await AsyncStorage.getItem('userProfile');
+              const profile = userProfileData ? JSON.parse(userProfileData) : {};
+
+              const newProject: Project = {
+                id: `project_${Date.now()}`,
+                name: projectName.trim(),
+                niche: profile.niche || 'General',
+                subNiche: profile.subNiche || '',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                isDeleted: false,
+              };
+
+              const existingProjects = await AsyncStorage.getItem('projects');
+              const projects: Project[] = existingProjects ? JSON.parse(existingProjects) : [];
+              projects.push(newProject);
+              await AsyncStorage.setItem('projects', JSON.stringify(projects));
+
+              setProjects(projects.filter(p => !p.isDeleted));
+              Alert.alert('Success', `Project "${projectName}" created!`);
+            } catch (error) {
+              console.error('Failed to create project:', error);
+              Alert.alert('Error', 'Failed to create project. Please try again.');
+            }
+          },
+        },
+      ],
+      'plain-text'
+    );
+  };
+
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
       <Text style={styles.emptyStateIcon}>📹</Text>
@@ -48,7 +100,7 @@ export default function ProjectsListScreen() {
       <Text style={styles.emptyStateText}>
         Create your first {nicheInfo} video project to get started
       </Text>
-      <TouchableOpacity style={styles.createButton}>
+      <TouchableOpacity style={styles.createButton} onPress={handleCreateProject}>
         <Text style={styles.createButtonText}>Create Project</Text>
       </TouchableOpacity>
       <TouchableOpacity
@@ -78,6 +130,11 @@ export default function ProjectsListScreen() {
         ListEmptyComponent={renderEmptyState}
         contentContainerStyle={styles.listContent}
       />
+      {projects.length > 0 && (
+        <TouchableOpacity style={styles.fab} onPress={handleCreateProject}>
+          <Text style={styles.fabText}>+</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -148,5 +205,26 @@ const styles = StyleSheet.create({
   projectMeta: {
     fontSize: 14,
     color: '#666',
+  },
+  fab: {
+    position: 'absolute',
+    right: 24,
+    bottom: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#007AFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 8,
+  },
+  fabText: {
+    color: '#fff',
+    fontSize: 32,
+    fontWeight: '300',
   },
 });
