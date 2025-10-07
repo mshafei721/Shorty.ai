@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import type { Project } from '../storage/schema';
 
+type NavigationProp = StackNavigationProp<any>;
+
 export default function ProjectsListScreen() {
+  const navigation = useNavigation<NavigationProp>();
   const [projects, setProjects] = useState<Project[]>([]);
   const [nicheInfo, setNicheInfo] = useState<string>('');
 
@@ -45,6 +50,12 @@ export default function ProjectsListScreen() {
       </Text>
       <TouchableOpacity style={styles.createButton}>
         <Text style={styles.createButtonText}>Create Project</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.createButton, styles.recordButton]}
+        onPress={() => navigation.navigate('Record')}
+      >
+        <Text style={styles.createButtonText}>Test Record Screen</Text>
       </TouchableOpacity>
     </View>
   );
@@ -112,6 +123,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: '600',
+  },
+  recordButton: {
+    backgroundColor: '#10B981',
+    marginTop: 12,
   },
   projectCard: {
     backgroundColor: '#fff',
