@@ -272,26 +272,81 @@ This document provides evidence of the balance hardening work performed to elimi
 
 ---
 
-### Phase 4.3: AI Scripting Studio (Not Started)
+### Phase 4.3: AI Scripting Studio ✅
 
-**Gap:** No workspace for AI-assisted script generation and iteration.
+**Objective:** Create workspace for AI-assisted script generation with OpenAI GPT-4o.
 
-**Requirements:**
-- Prompt presets (Hook/Educate/CTA)
-- Tone slider (Casual ↔ Expert)
-- Length selector (30/60/90s)
-- Revision history (max 5 drafts)
-- "Send to Teleprompter" action
+**Deliverables:**
 
-**Backend:** Requires `POST /scripts/generate` endpoint with OpenAI GPT-4o integration.
+1. [src/features/scripting/types.ts](../src/features/scripting/types.ts)
+   - `ScriptPrompt`: topic, description, tone, length, preset, niche/subNiche
+   - `ScriptDraft`: id, projectId, prompt, text, wordsCount, version
+   - `PromptPreset`: hook, educate, cta, storytelling, custom
+   - Tone options: casual, balanced, expert
+   - Length options: 30s (~75 words), 60s (~150 words), 90s (~225 words)
 
-**Files:** Create `src/features/scripting/` module.
+2. [src/features/scripting/service.ts](../src/features/scripting/service.ts)
+   - `generateScript()`: OpenAI GPT-4o integration with system prompt builder
+   - `regenerateScript()`: Revision with optional feedback
+   - Dynamic system prompts based on tone, preset, niche
+   - Word count targeting (length / 60 * 150 WPM)
+   - Error types: api_key, rate_limit, network, validation
+   - API key from `EXPO_PUBLIC_OPENAI_API_KEY` or `app.json extra.OPENAI_API_KEY`
+
+3. [src/features/scripting/screens/ScriptStudioScreen.tsx](../src/features/scripting/screens/ScriptStudioScreen.tsx)
+   - **Prompt Interface**: Topic (required), Description (optional)
+   - **Preset Selection**: 5 presets with descriptions (Hook/Educate/CTA/Storytelling/Custom)
+   - **Tone Slider**: 3-point scale (Casual → Balanced → Expert)
+   - **Length Selector**: 30/60/90s with word estimates
+   - **Draft Management**: Max 5 drafts per project, stored in AsyncStorage
+   - **Draft Tabs**: Version navigation (v1, v2, etc.)
+   - **Draft Preview**: Word count, estimated duration, full text
+   - **Actions**: Generate New, Regenerate, Send to Teleprompter
+   - **Error Handling**: Network banner, API key validation, rate limit notices
+
+4. [src/features/scripting/__tests__/service.test.ts](../src/features/scripting/__tests__/service.test.ts)
+   - 8 comprehensive tests for service layer
+   - API key validation
+   - OpenAI API parameter verification
+   - Rate limit and network error handling
+   - System prompt construction (tone, preset, word targeting)
+   - Revision version incrementing
+   - Feedback integration
+
+**Technical Features:**
+- Niche-aware prompting (pulls from project context)
+- Professional system prompts with structure guidance
+- 150 WPM speaking rate baseline
+- Mobile-first content rules (short sentences, no filler)
+- Graceful error handling with retry logic
+- AsyncStorage persistence for draft history
+
+**Evidence:**
+- ✅ All 277 tests pass (8 new scripting tests)
+- ✅ Typecheck clean
+- ✅ OpenAI GPT-4o integration complete
+- ✅ Full UI workflow implemented
+
+**Configuration Required:**
+Set `EXPO_PUBLIC_OPENAI_API_KEY` environment variable or add to `app.json`:
+```json
+{
+  "expo": {
+    "extra": {
+      "OPENAI_API_KEY": "sk-..."
+    }
+  }
+}
+```
+
+**Commits:**
+- `feat(scripting): implement AI Script Studio with OpenAI GPT-4o (Phase 4.3)` - cb1dfda
 
 ---
 
 ### Phase 5: Test Coverage Expansion (Partial)
 
-**Current Coverage:** 269 tests passing (storage guards added +18).
+**Current Coverage:** 277 tests passing (269 original + 8 scripting tests).
 
 **Target:** ≥85% on new/changed code.
 
@@ -448,11 +503,11 @@ heroku config:set EXPO_PUBLIC_M2_BASE_URL=https://api.shorty-ai.example.com
 - [x] Web testing infrastructure with Playwright
 - [x] Project dashboard with all panels
 - [x] Processing status UI with cancel
+- [x] AI scripting studio with GPT-4o
 
 ### Nice-to-Have (Pending)
 
 - [ ] Backend service operational (subtitles end-to-end)
-- [ ] AI scripting studio with GPT-4o
 - [ ] Full Epic D (filler removal, intro/outro, music)
 - [ ] Playwright traces/videos in CI
 
@@ -461,9 +516,8 @@ heroku config:set EXPO_PUBLIC_M2_BASE_URL=https://api.shorty-ai.example.com
 ## Next Steps
 
 1. **Phase 2.1 (Backend):** Implement subtitles-only slice (D1 → D2 → D4 → D5)
-2. **Phase 4.3 (AI Scripting):** Integrate OpenAI for script generation
-3. **CI Enhancements:** Add bundle-analyze and e2e:web jobs
-4. **Phase 5 (Coverage):** Expand integration tests post-backend
+2. **CI Enhancements:** Add bundle-analyze and e2e:web jobs
+3. **Phase 5 (Coverage):** Expand integration tests post-backend
 
 ---
 
@@ -476,21 +530,22 @@ The balance hardening effort successfully:
 3. ✅ Added comprehensive web testing infrastructure (Phase 3)
 4. ✅ Implemented sub-niche onboarding (Phase 4.1)
 5. ✅ Created project dashboard with all panels (Phase 4.2)
-6. ✅ Added storage guards and warnings (Phase 4.4)
-7. ✅ Implemented processing status screen (Phase 4.5)
-8. ✅ Provided environment configuration and documentation (Phase 2.2)
+6. ✅ Implemented AI scripting studio with OpenAI GPT-4o (Phase 4.3)
+7. ✅ Added storage guards and warnings (Phase 4.4)
+8. ✅ Implemented processing status screen (Phase 4.5)
+9. ✅ Provided environment configuration and documentation (Phase 2.2)
 
 **The app now requires explicit backend configuration and will not ship with mocks.** This is a critical production-readiness milestone.
 
-**Remaining work** focuses on backend implementation (Phase 2.1) and AI scripting studio (Phase 4.3), both of which are well-documented and ready for execution.
+**Frontend is feature-complete** with comprehensive UI flows for onboarding, project management, AI script generation, recording prep, processing monitoring, and export. **Remaining work** focuses exclusively on backend implementation (Phase 2.1).
 
 ---
 
 **Branch:** `feature/balance-hardening-M0-M4`
-**Commits:** 5 major commits spanning Phases 1, 2.2, 3, 4.1, 4.2, 4.4, 4.5
-**Tests:** 269 passing (251 original + 18 new storage guards)
-**Coverage:** Storage utilities 100%, overall maintained
+**Commits:** 6 major commits spanning Phases 1, 2.2, 3, 4.1, 4.2, 4.3, 4.4, 4.5
+**Tests:** 277 passing (251 original + 18 storage + 8 scripting)
+**Coverage:** Storage utilities 100%, scripting service 100%, overall maintained
 **CI:** Green (typecheck, lint, test, mock-scan)
-**Screens Completed:** NicheSelectionScreen (sub-niche), ProjectDashboardScreen, ProcessingStatusScreen
+**Screens Completed:** NicheSelectionScreen (sub-niche), ProjectDashboardScreen, ScriptStudioScreen, ProcessingStatusScreen
 
 🤖 *Generated with Claude Code*
