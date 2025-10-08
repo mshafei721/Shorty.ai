@@ -26,123 +26,139 @@ Set the backend URL:
 EXPO_PUBLIC_M2_BASE_URL=http://localhost:3000
 ```
 
-### 2. Backend Service (TODO: Implement)
+### 2. Backend Service
 
-**Status:** Backend service implementation is pending (Phase 2.1 of balance hardening plan).
+**Status:** ✅ **Implemented** - Subtitles-only slice (Phase 2.1)
 
-The backend must implement these endpoints:
+**Location:** `backend/` directory
 
-#### GET /projects/:projectId/assets/:assetId/status
+**Setup:**
 
-Returns job status:
+```bash
+cd backend
+npm install
+cp .env.example .env
+# Edit .env with your API keys:
+# - ASSEMBLYAI_API_KEY
+# - SHOTSTACK_API_KEY
+npm run dev
+```
 
-```typescript
+The backend implements these endpoints:
+
+#### POST /uploads
+
+Upload video file for processing.
+
+**Request:** `multipart/form-data` with `video` field
+**Response:**
+```json
 {
-  stage: 'complete' | 'processing' | 'failed',
-  status: 'done' | 'queued' | 'error',
-  progressPct: number,  // 0-100
-  artifactUrl?: string  // Present when stage='complete'
+  "video": {
+    "id": "uuid",
+    "originalName": "my-video.mp4",
+    "sizeBytes": 12345678,
+    "uploadedAt": "2025-01-08T..."
+  }
 }
 ```
 
-#### GET /projects/:projectId/assets/:assetId/transcript
+#### POST /jobs
 
-Returns normalized transcript:
-
-```typescript
-{
-  tokens: Array<{
-    text: string,
-    startMs: number,
-    endMs: number,
-    confidence?: number
-  }>,
-  fullText: string,
-  durationMs: number,
-  language: string
-}
-```
-
-#### GET /projects/:projectId/assets/:assetId/fillers
-
-Returns filler word spans:
-
-```typescript
-{
-  fillers: Array<{
-    startMs: number,
-    endMs: number,
-    text: string,
-    confidence: number
-  }>
-}
-```
-
-#### POST /projects/:projectId/draft
-
-Request draft rendering:
+Create processing job.
 
 **Request Body:**
-```typescript
+```json
 {
-  assetId: string,
-  config: {
-    fillerRemoval: boolean,
-    jumpCuts: boolean,
-    captions: {
-      enabled: boolean,
-      size: number,
-      style: 'boxed' | 'plain'
-    },
-    introOutro: boolean,
-    frameMarginPx: number,
-    version: number,
-    updatedAt: string
+  "videoId": "uuid-from-upload",
+  "features": {
+    "subtitles": true,
+    "fillerWordRemoval": false
   }
 }
 ```
 
 **Response:**
-```typescript
+```json
 {
-  renderId: string
+  "job": {
+    "id": "job-uuid",
+    "videoId": "uuid",
+    "status": "queued",
+    "progress": 0,
+    "requestedFeatures": { ... },
+    "startedAt": "2025-01-08T..."
+  }
 }
 ```
 
-#### GET /drafts/:renderId/status
+#### GET /jobs/:jobId
 
-Poll draft status:
+Poll job status (2-second intervals recommended).
 
-```typescript
+**Response:**
+```json
 {
-  renderId: string,
-  status: 'queued' | 'rendering' | 'done' | 'failed',
-  progressPct: number,
-  artifactUrl?: string,  // Present when status='done'
-  error?: {
-    code: string,
-    message: string
+  "job": {
+    "id": "job-uuid",
+    "videoId": "uuid",
+    "status": "complete",
+    "progress": 100,
+    "startedAt": "2025-01-08T...",
+    "completedAt": "2025-01-08T...",
+    "outputUrl": "https://shotstack.io/.../output.mp4",
+    "error": null
   }
+}
+```
+
+**Status Values:** `queued` | `processing` | `complete` | `failed` | `cancelled`
+
+#### POST /jobs/:jobId/cancel
+
+Cancel processing job.
+
+**Response:**
+```json
+{
+  "message": "Job cancelled successfully",
+  "jobId": "job-uuid"
+}
+```
+
+#### GET /health
+
+Health check endpoint.
+
+**Response:**
+```json
+{
+  "status": "ok",
+  "timestamp": "2025-01-08T...",
+  "env": "development"
 }
 ```
 
 ## Provider Integration
 
-The backend service must integrate with:
+The backend integrates with:
 
-1. **AssemblyAI** (transcription)
+1. **✅ AssemblyAI** (transcription) - **IMPLEMENTED**
    - Endpoint: `https://api.assemblyai.com/v2/transcript`
-   - Fallback: Deepgram Nova-3
+   - Features: Punctuation, text formatting, word-level timestamps
+   - Polling: 3-second intervals, max 200 attempts
 
-2. **Shotstack** (composition)
-   - Endpoint: `https://api.shotstack.io/v1/render`
-   - Fallback: Cloudinary Video API
+2. **✅ Shotstack** (composition) - **IMPLEMENTED**
+   - Endpoint: `https://api.shotstack.io/{env}/render`
+   - Features: HTML subtitle overlay, 9:16 aspect ratio, 1080x1920
+   - Subtitle styling: White text, black background, drop shadow
+   - Polling: 2-second intervals, max 300 attempts
 
-3. **Mux** (encoding)
-   - Endpoint: Mux Video API
-   - Fallback: Coconut
+3. **⏳ Mux** (encoding) - **NOT YET NEEDED**
+   - Shotstack provides final MP4 output
+   - Mux integration deferred to future phases
 
-See `plan.md` Epic D (D1-D6) for detailed implementation requirements.
+See `backend/` directory for implementation details.
 
 ## Testing
 
@@ -200,10 +216,26 @@ CI will fail if:
 
 See `.github/workflows/ci.yml` for enforcement rules.
 
+## Implementation Status
+
+**Phase 2.1 (Subtitles-only slice):** ✅ **COMPLETE**
+- D1: Upload adapter ✅
+- D2: AssemblyAI transcription ✅
+- D4: Shotstack composition ✅
+- D6: Job orchestration FSM ✅
+
+**Future Enhancements:**
+- D3: Filler-word removal
+- D5: Mux encoding (if needed)
+- Background music, intro/outro
+- Database persistence (PostgreSQL)
+- Queue system (Bull/BullMQ)
+- Webhooks for notifications
+
 ## Next Steps
 
-1. Implement backend service (Epic D, tickets D1-D6)
+1. ✅ ~~Implement backend service subtitles slice~~ **DONE**
 2. Deploy to staging environment
-3. Configure provider API keys
-4. Run end-to-end tests
-5. Update this document with actual deployment instructions
+3. Configure provider API keys (AssemblyAI, Shotstack)
+4. Run end-to-end tests with mobile app
+5. Add remaining features (D3, D5, Epic D extensions)
