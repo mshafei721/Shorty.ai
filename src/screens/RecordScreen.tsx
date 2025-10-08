@@ -34,6 +34,7 @@ export default function RecordScreen() {
   );
   const [wpm, setWpm] = useState(140);
   const [fontSize, setFontSize] = useState(18);
+  const [cameraFacing, setCameraFacing] = useState<'front' | 'back'>('back');
   const showTeleprompter = true;
 
   // Recording FSM
@@ -125,6 +126,10 @@ export default function RecordScreen() {
     recording.resumeRecording();
   };
 
+  const handleFlipCamera = () => {
+    setCameraFacing(prev => prev === 'back' ? 'front' : 'back');
+  };
+
   if (isCheckingPermissions) {
     return (
       <View style={styles.container}>
@@ -153,10 +158,12 @@ export default function RecordScreen() {
             isPaused={recording.state === 'paused'}
             elapsedMs={recording.elapsedMs}
             maxDurationMs={120000}
+            facing={cameraFacing}
             onStartPress={handleStartRecording}
             onStopPress={handleStopRecording}
             onPausePress={handlePauseRecording}
             onResumePress={handleResumeRecording}
+            onFlipCamera={handleFlipCamera}
           />
 
           {showTeleprompter && (

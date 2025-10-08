@@ -112,8 +112,16 @@ export default function ProjectsListScreen() {
     </View>
   );
 
+  const handleProjectPress = (project: Project) => {
+    Alert.alert(
+      project.name,
+      `Project Dashboard\n\nNiche: ${project.niche}\nCreated: ${new Date(project.createdAt).toLocaleDateString()}\n\nProject dashboard coming soon!`,
+      [{ text: 'OK' }]
+    );
+  };
+
   const renderProject = ({ item }: { item: Project }) => (
-    <TouchableOpacity style={styles.projectCard}>
+    <TouchableOpacity style={styles.projectCard} onPress={() => handleProjectPress(item)}>
       <Text style={styles.projectName}>{item.name}</Text>
       <Text style={styles.projectMeta}>
         {item.niche} • {new Date(item.createdAt).toLocaleDateString()}

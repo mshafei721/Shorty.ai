@@ -16,10 +16,12 @@ export interface CameraPreviewProps {
   isPaused: boolean;
   elapsedMs: number;
   maxDurationMs: number;
+  facing: 'front' | 'back';
   onStartPress: () => void;
   onStopPress: () => void;
   onPausePress: () => void;
   onResumePress: () => void;
+  onFlipCamera: () => void;
 }
 
 function formatTime(ms: number): string {
@@ -34,10 +36,12 @@ export function CameraPreview({
   isPaused,
   elapsedMs,
   maxDurationMs,
+  facing,
   onStartPress,
   onStopPress,
   onPausePress,
   onResumePress,
+  onFlipCamera,
 }: CameraPreviewProps) {
   const remainingMs = maxDurationMs - elapsedMs;
   const isNearEnd = remainingMs <= 15000 && remainingMs > 0;
@@ -73,7 +77,7 @@ export function CameraPreview({
       <CameraView
         ref={cameraRef}
         style={styles.preview}
-        facing="back"
+        facing={facing}
         mode="video"
       >
         {/* Empty - camera view fills container */}
@@ -107,6 +111,17 @@ export function CameraPreview({
             </Text>
           )}
         </View>
+      )}
+
+      {/* Camera Flip Button */}
+      {!isRecording && (
+        <TouchableOpacity
+          testID="flip-camera-button"
+          style={styles.flipButton}
+          onPress={onFlipCamera}
+        >
+          <Text style={styles.flipButtonText}>🔄</Text>
+        </TouchableOpacity>
       )}
 
       {/* Controls */}
@@ -235,6 +250,20 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     marginTop: 2,
+  },
+  flipButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  flipButtonText: {
+    fontSize: 24,
   },
   controls: {
     position: 'absolute',

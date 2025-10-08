@@ -46,13 +46,8 @@ export default function SettingsScreen() {
       setStorageUsedMB(estimatedStorageMB);
 
       // Get free disk space
-      try {
-        const freeDiskStorage = await FileSystem.getFreeDiskStorageAsync();
-        setFreeSpaceMB(Math.round(freeDiskStorage / (1024 * 1024)));
-      } catch (err) {
-        // FileSystem API not available or unsupported platform
-        console.log('Free disk storage API not available:', err);
-      }
+      // Note: getFreeDiskStorageAsync was removed in Expo SDK 54
+      setFreeSpaceMB(0);
     } catch (error) {
       console.error('Failed to load storage info:', error);
     }
