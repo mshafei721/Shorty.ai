@@ -74,6 +74,10 @@
       "jsx",
       "json"
     ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/e2e/"
+    ],
     "transformIgnorePatterns": [
       "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)"
     ],
@@ -83,7 +87,8 @@
       "!src/**/*.d.ts",
       "!src/**/__tests__/**",
       "!src/screens/**",
-      "!src/components/ErrorBoundary.tsx"
+      "!src/components/ErrorBoundary.tsx",
+      "!e2e/**"
     ]
   },
   "engines": {
