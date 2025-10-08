@@ -12,25 +12,23 @@
 
 ### MVP Scope (What Done Looks Like)
 
-- ✅ **Onboarding:** Niche/sub-niche selection with AsyncStorage persistence
-- ✅ **Projects:** Unlimited projects (CRUD with soft delete), dashboard with video grid
-- ✅ **Scripting:** AI generation (GPT-4o + moderation) OR manual paste (20-500 words)
-- ✅ **Recording:** Portrait 1080x1920@30fps, ≤120s auto-stop, storage checks (≥500MB free)
-- ✅ **Teleprompter:** 0.55 opacity overlay, WPM 80-200 (default 140), font sizes S/M/L, highlight current line
-- ✅ **Processing Pipeline:** Upload → Transcription (AssemblyAI) → Filler-word removal → Intro/Outro → Composition (Shotstack) → Encoding (Mux)
-- ✅ **Preview & Export:** Expo AV player, native share sheet (iOS/Android), fallback to local save
-- ✅ **Error Handling:** Permissions denied, offline mode, storage warnings, processing failures with retry
-- ✅ **Local-only Storage:** All videos/metadata on-device (FileSystem + AsyncStorage); no cloud backup
-
+- [In Progress] **Onboarding:** Capture niche and sub-niche plus default prompts/template presets, persist to AsyncStorage, allow edits in Settings, emit completion analytics.
+- [In Progress] **Projects:** Unlimited projects with soft delete and a dashboard hub (active videos, AI drafts, contextual recommendations, quick actions) supporting offline caching.
+- [In Progress] **Scripting:** AI studio offering presets (Hook/Educate/CTA), tone & length controls, revision history (up to 5 drafts), moderation fallback, and send-to-teleprompter handoff; manual paste (20-500 words) with validation.
+- [In Progress] **Recording:** Portrait 1080x1920@30fps capture <=120s with storage guardrails, rehearsal transition, multi-take capture and selection.
+- [In Progress] **Teleprompter:** Adjustable opacity/WPM/font, rehearsal mode, AI script diff confirmation, multi-take organization, warnings for long scripts or low storage.
+- [In Progress] **Processing Pipeline:** Upload -> transcription -> filler removal/jump cuts -> captions (brand colors) -> intro/outro templates -> optional background change/B-roll -> music mixing orchestrated across vendors with retries and telemetry.
+- [In Progress] **Preview & Export:** Expo AV preview summarizing applied edits, retry flow, native share sheet (iOS/Android) with fallback to local save.
+- [In Progress] **Error Handling:** Permissions handling, offline queueing, storage warnings, processing cancel/retry, vendor failure surfacing, telemetry toggle.
+- [In Progress] **Local-only Storage:** All videos/metadata on-device (FileSystem + AsyncStorage); no cloud backup.
 ### Explicit Non-Goals
-
-- ❌ User accounts, auth, cloud sync
-- ❌ Social features (feeds, comments, collaboration)
-- ❌ Custom native modules or on-device heavy processing
-- ❌ Manual timeline editing
-- ❌ Background removal (deferred to Phase 2 due to cost)
-- ❌ Background music (deferred pending user demand)
-- ❌ Analytics backend or CRM
+- [Non-Goal] User accounts, authentication, or cloud sync.
+- [Non-Goal] Social features (feeds, comments, collaboration).
+- [Non-Goal] Custom native modules or on-device heavy editing workloads.
+- [Non-Goal] Manual timeline editing capabilities.
+- [Non-Goal] Background removal (deferred to Phase 2 due to cost).
+- [Non-Goal] Advanced background music customization (user uploads, multi-track mixing).
+- [Non-Goal] Analytics backend or CRM integrations.
 
 ### Success Definition
 
@@ -72,11 +70,13 @@ script_completed → record_started → record_completed → processing_started 
 | Milestone | Dates | Entry Criteria | Exit Criteria | Demoable Outcome |
 |-----------|-------|----------------|---------------|------------------|
 | **M0: Foundations** | Week 1-2<br>(Oct 7-20) | Repo initialized, team access, vendor POC credits | Expo project running, navigation stacks, AsyncStorage schema, API contracts defined | Navigate: Onboarding → Projects → Script → Record (stub) |
-| **M1: Recording + Teleprompter** | Week 3-4<br>(Oct 21-Nov 3) | M0 complete, Camera permissions UX designed | Working camera capture @1080x1920, teleprompter overlay functional, raw video saved to FileSystem | Record 30s video with teleprompter, save locally, play back |
-| **M2: Processing Pipeline POC** | Week 5-6<br>(Nov 4-17) | M1 complete, vendor API keys secured, webhook endpoint live | Upload → AssemblyAI transcription → cut-list generation → Shotstack composition → download validated | Upload test clip, get transcribed subtitles, apply 1 filler-word cut, download result |
-| **M3: Feature Selection & Preview** | Week 7<br>(Nov 18-24) | M2 complete, feature toggle UI designed | Feature selection screen functional, processing job state machine working, preview player with controls | Select features → submit → show processing status → play processed video |
+| **M1: Recording + Teleprompter** | Week 3-4<br>(Oct 21-Nov 3) | M0 complete, Camera permissions UX designed | Working camera capture @1080x1920, teleprompter rehearsal + adjustable controls live, AI-script handoff into teleprompter, multi-take capture/selection, storage warnings enforced | Record 30s video with AI script, rehearse, capture multiple takes, select preferred take, and play back |
+| **M2: Processing Pipeline POC** | Week 5-6<br>(Nov 4-17) | M1 complete, vendor API keys secured, webhook endpoint live | Operational backend slice delivering subtitles + filler-word trims + music mix end-to-end with retries/telemetry, neutral error codes mapped, processed file downloadable | Submit sample clip, receive processed output with branded captions and filler cuts, inspect returned feature config |
+| **M3: Feature Selection & Preview** | Week 7<br>(Nov 18-24) | M2 complete, feature toggle UI designed | Feature selection screen covers dashboard-surfaced outputs, processing job state machine integrates backend config, preview handles success/failure, project dashboard reflects processed status | Toggle features, submit, monitor status, view completed video in preview and dashboard history |
 | **M4: Export & Reliability** | Week 8<br>(Nov 25-Dec 1) | M3 complete, share API tested on iOS/Android | Native share sheet working, offline mode handling, error states polished, retry logic functional | Export video to Instagram/TikTok via share sheet, handle network failures gracefully |
 | **M5: Beta Hardening** | Week 9-10<br>(Dec 2-15) | M4 complete, manual test plan executed | All acceptance criteria met, <5% crash rate, ≥90% processing success, docs complete | Full walkthrough: onboard → create project → script → record → process → export (3 test niches) |
+
+**Dependency Callouts:** M3 and M4 remain blocked on the D9 subtitles slice and overall pipeline readiness; dashboard surfacing of processed videos must not start until D9 exits staging.
 
 ---
 
@@ -85,12 +85,15 @@ script_completed → record_started → record_completed → processing_started 
 | Workstream | Description | Responsible | Accountable | Consulted | Informed |
 |------------|-------------|-------------|-------------|-----------|----------|
 | **(A) App Framework & Navigation** | Expo setup, navigation stacks, deep links, splash → onboarding → main tabs | **FE Lead** | PM | Design | QA |
-| **(B) Capture & Teleprompter** | Camera permissions, 1080x1920 recording, teleprompter overlay (opacity, WPM, font), countdown | **FE Dev 1** | FE Lead | Design | QA |
+| **(B) Capture & Teleprompter** | Camera permissions, 1080x1920 recording, rehearsal flow, multi-take capture, teleprompter overlay (opacity/WPM/font) with AI script handoff | **FE Dev 1** | FE Lead | Design | QA |
 | **(C) Local Storage & Data Model** | AsyncStorage schema (projects, scripts, videos), FileSystem paths (raw/processed), migration logic | **FE Dev 2** | FE Lead | Backend Integrator | QA |
-| **(D) External Processing Adapters** | Upload/poll/download adapter, AssemblyAI/Shotstack/Mux integration, filler-word logic, retry/backoff | **Backend Integrator** | Eng Lead | QA, Legal (DPA) | PM |
+| **(D) External Processing Adapters** | Upload/poll/download adapters, AssemblyAI transcript + filler trims, Shotstack templates, music/B-roll integrations, neutral error mapping, retry/backoff | **Backend Integrator** | Eng Lead | QA, Legal (DPA) | PM |
 | **(E) UI/UX & Accessibility** | Design system, empty states, error messaging, a11y (VoiceOver labels, contrast, font scaling) | **Designer** | PM | FE Lead | QA |
 | **(F) QA & Release** | Test plan execution, device matrix, regression suite, beta distribution (TestFlight/Expo) | **QA Lead** | Eng Lead | All devs | PM |
 | **(G) Observability & Metrics** | Local analytics schema, event tracking, crash reporting (Sentry), cost monitoring | **Backend Integrator** | Eng Lead | PM | QA |
+| **(H) Project Dashboard Hub** | Dashboard UI, active video metrics, AI draft list, recommendations, offline caching | **FE Dev 2** | PM | Designer, Backend Integrator | QA |
+| **(I) AI Scripting Studio** | Prompt presets, tone/length controls, revision history, moderation fallback, teleprompter send flow | **FE Dev 1 & Backend Integrator** | Eng Lead | Designer, PM | QA |
+| **(J) Pipeline Orchestration** | Backend job state machine, vendor coordination, telemetry, feature configuration payloads, monitoring | **Backend Integrator** | Eng Lead | FE Lead, QA | PM |
 
 **Team Composition:**
 - 1 × Engineering Lead (backend/mobile)
@@ -127,16 +130,19 @@ Deep Link: shortyai://project/{id}
 
 **Recording State Machine:**
 ```
-Idle → [Tap Record] → Countdown → Recording ↔ Paused → Reviewing → ReadyForFeatures
+Idle → [Tap Rehearse] → Rehearsing → Idle
+Idle → [Tap Record] → Countdown → Recording ↔ Paused → Reviewing → SelectingTake → ReadyForFeatures
 - Auto-stop at 120s → Reviewing
+- Low storage or WPM overflow → GuardrailPrompt
 - Error (permissions/storage) → ErrorState
 ```
 
 **Teleprompter State Machine:**
 ```
-Hidden → [Script available] → VisiblePaused → [Start] → Scrolling ↔ [Pause] → VisiblePaused
+Hidden → [Script available] → DiffConfirm → VisiblePaused → [Start/Rehearse] → Scrolling ↔ [Pause] → VisiblePaused
 - Reaches end → Completed → [Restart] → Scrolling
 - Overlay error → Hidden (fallback to static script)
+- Send-to-Teleprompter from AI studio → DiffConfirm (highlight changes)
 ```
 
 **Processing Job State Machine:**
@@ -153,6 +159,7 @@ Idle → [Submit features] → Uploading → Queued → Processing → Complete/
 - `projects`: `Array<Project>` (with `isDeleted` for soft delete)
 - `scripts`: `Array<Script>` (source: 'ai' | 'manual')
 - `videos`: `Array<VideoAsset>` (type: 'raw' | 'processed', status: 'ready' | 'processing' | 'failed' | 'cancelled')
+- `dashboardState`: cached panels (activeVideos, aiDrafts, recommendations) keyed by projectId with timestamps
 - `analytics`: Local event counters (rotated every 30 days)
 - `userProfile`: Onboarding niche/sub-niche selection
 - `appStateVersion`: Schema version for migrations
@@ -1523,3 +1530,36 @@ if (job.error.retryable && job.retries < 3) {
 |------|---------|--------|---------|
 | 2025-10-05 | 1.0 | Eng Lead | Initial delivery plan created from PRD + Vendor Evaluation |
 
+
+---
+### 2025-10-08 Review Notes (Codex)
+- [Done] Folded into core plan sections on 2025-10-08; list retained for audit trail.
+- MVP scope checklist currently marks onboarding, projects dashboard, scripting, processing, and export flows as complete, but the repo still lacks the project dashboard UI, AI scripting workspace, teleprompter controls, and a real processing backend; update the checklist to reflect actual readiness instead of ✅.
+- Non-goal list calls background music out as deferred, yet both the PRD and feature toggles rely on it; reconcile by either re-scoping music into the MVP or explicitly removing it from the feature list.
+- Add workstreams or sub-milestones for the AI scripting studio, project dashboard hub, and backend orchestration so ownership is clear (they are not represented in the current RACI or milestone breakdown).
+- Update milestone exit criteria to include a functioning AI processing pipeline and teleprompter-script integration so the schedule reflects true release gating.
+- Incorporate QA and design deliverables for the new dashboard/scripting flows into the timeline; they are missing from M1-M3 despite being critical to the “one-stop shop” positioning.
+
+---
+### 2025-10-08 Scope Reality Update (Codex)
+**MVP Checklist Corrections**
+- Reclassify onboarding, project dashboard, AI scripting, teleprompter controls, processing pipeline, and export as “In Progress” until functional demos exist; placeholders alone do not meet acceptance criteria.
+- Note that teleprompter controls (WPM/font/opacity) and low-storage safeguards must be implemented before claiming Recording is complete.
+
+**New Workstreams**
+- Add Workstream (H) Project Dashboard Hub – Responsible: FE Dev 2, Accountable: PM, Consulted: Designer; deliver dashboard UI, data stitching, and recommendations.
+- Add Workstream (I) AI Scripting Studio – Responsible: Backend Integrator + FE Dev 1, Accountable: Eng Lead; deliver prompt presets, revision history, and teleprompter handoff.
+- Add Workstream (J) AI Processing Pipeline – Responsible: Backend Integrator, Accountable: Eng Lead; cover orchestration service, vendor integrations, monitoring.
+
+**Milestone Exit Criteria Adjustments**
+- M1 exit must include teleprompter rehearsal mode, adjustable controls, and AI-script handoff tested on-device.
+- M2 exit must require an operational backend pipeline capable of delivering at least the subtitles feature end-to-end with retry/backoff.
+- M3 exit should include dashboard surfacing of processed outputs and error handling paths.
+
+**Design & QA Deliverables**
+- Insert design tasks for dashboard widgets, AI scripting flows, and processing status screens into the milestone tables with owners/dates.
+- Expand QA plans for multi-take recording, AI script revisions, and backend failure scenarios before M4.
+
+**Dependency Tracking & Reporting**
+- Create dependency callouts for backend pipeline readiness in each affected milestone (M2-M4) and highlight in status reports.
+- Align background music scope with PRD decisions; if music remains MVP, mark it as a dependency on the pipeline workstream rather than a non-goal.
