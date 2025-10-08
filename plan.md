@@ -1523,3 +1523,35 @@ if (job.error.retryable && job.retries < 3) {
 |------|---------|--------|---------|
 | 2025-10-05 | 1.0 | Eng Lead | Initial delivery plan created from PRD + Vendor Evaluation |
 
+
+---
+### 2025-10-08 Review Notes (Codex)
+- MVP scope checklist currently marks onboarding, projects dashboard, scripting, processing, and export flows as complete, but the repo still lacks the project dashboard UI, AI scripting workspace, teleprompter controls, and a real processing backend; update the checklist to reflect actual readiness instead of ✅.
+- Non-goal list calls background music out as deferred, yet both the PRD and feature toggles rely on it; reconcile by either re-scoping music into the MVP or explicitly removing it from the feature list.
+- Add workstreams or sub-milestones for the AI scripting studio, project dashboard hub, and backend orchestration so ownership is clear (they are not represented in the current RACI or milestone breakdown).
+- Update milestone exit criteria to include a functioning AI processing pipeline and teleprompter-script integration so the schedule reflects true release gating.
+- Incorporate QA and design deliverables for the new dashboard/scripting flows into the timeline; they are missing from M1-M3 despite being critical to the “one-stop shop” positioning.
+
+---
+### 2025-10-08 Scope Reality Update (Codex)
+**MVP Checklist Corrections**
+- Reclassify onboarding, project dashboard, AI scripting, teleprompter controls, processing pipeline, and export as “In Progress” until functional demos exist; placeholders alone do not meet acceptance criteria.
+- Note that teleprompter controls (WPM/font/opacity) and low-storage safeguards must be implemented before claiming Recording is complete.
+
+**New Workstreams**
+- Add Workstream (H) Project Dashboard Hub – Responsible: FE Dev 2, Accountable: PM, Consulted: Designer; deliver dashboard UI, data stitching, and recommendations.
+- Add Workstream (I) AI Scripting Studio – Responsible: Backend Integrator + FE Dev 1, Accountable: Eng Lead; deliver prompt presets, revision history, and teleprompter handoff.
+- Add Workstream (J) AI Processing Pipeline – Responsible: Backend Integrator, Accountable: Eng Lead; cover orchestration service, vendor integrations, monitoring.
+
+**Milestone Exit Criteria Adjustments**
+- M1 exit must include teleprompter rehearsal mode, adjustable controls, and AI-script handoff tested on-device.
+- M2 exit must require an operational backend pipeline capable of delivering at least the subtitles feature end-to-end with retry/backoff.
+- M3 exit should include dashboard surfacing of processed outputs and error handling paths.
+
+**Design & QA Deliverables**
+- Insert design tasks for dashboard widgets, AI scripting flows, and processing status screens into the milestone tables with owners/dates.
+- Expand QA plans for multi-take recording, AI script revisions, and backend failure scenarios before M4.
+
+**Dependency Tracking & Reporting**
+- Create dependency callouts for backend pipeline readiness in each affected milestone (M2-M4) and highlight in status reports.
+- Align background music scope with PRD decisions; if music remains MVP, mark it as a dependency on the pipeline workstream rather than a non-goal.

@@ -37,13 +37,19 @@ describe('retryWithBackoff', () => {
   });
 
   it('should throw RetryError after max attempts', async () => {
+    jest.useRealTimers();
+
     const operation = jest.fn().mockRejectedValue(new Error('Always fail'));
 
-    const promise = retryWithBackoff(operation, { maxAttempts: 3 });
-    jest.runAllTimers();
+    await expect(
+      retryWithBackoff(operation, { maxAttempts: 3, baseDelayMs: 1 })
+    ).rejects.toThrow(RetryError);
 
-    await expect(promise).rejects.toThrow(RetryError);
-    await expect(promise).rejects.toThrow('Operation failed after 3 attempts');
+    await expect(
+      retryWithBackoff(operation, { maxAttempts: 3, baseDelayMs: 1 })
+    ).rejects.toThrow('Operation failed after 3 attempts');
+
+    jest.useFakeTimers();
   });
 
   it('should apply exponential backoff', async () => {
@@ -101,8 +107,9 @@ describe('retryWithBackoff', () => {
 });
 
 describe('createIdempotencyKey', () => {
-  it('should create unique key with timestamp', () => {
+  it('should create unique key with timestamp', async () => {
     const key1 = createIdempotencyKey('share', 'asset-123');
+    await new Promise(resolve => setTimeout(resolve, 10));
     const key2 = createIdempotencyKey('share', 'asset-123');
 
     expect(key1).toMatch(/^share_asset-123_\d+$/);

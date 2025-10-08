@@ -86,10 +86,10 @@ Given share sheet cannot open
 When the system returns an error
 Then I see “Sharing unavailable. Video saved locally.” with path reference
 5. Functional Requirements
-Onboarding: Present niche and sub-niche pickers (dropdown or searchable list) sourced from constants; require selection; persist to AsyncStorage under userProfile.
+Onboarding: Present niche and sub-niche pickers (dropdown or searchable list) sourced from constants; require selection; persist to AsyncStorage under userProfile along with sub-niche default prompts, recommended template packs, and feature presets that auto-populate new projects; allow revisiting selection from Settings and emit completion analytics event.
 Projects: Support unlimited projects until device storage warning; default sort by updatedAt desc; allow edit/delete (soft delete by flag, actual deletion removes local videos).
-Project Dashboard: Grid/list of video thumbnails (processed) with duration badges; raw videos hidden unless processing fails.
-Script Screen: Character count display; two modes: "Paste script" (text box for manual entry) or "Generate with AI" (prompt for topic [required] and short description [optional], then AI researches topic and generates script via POST to external endpoint with retries (2 attempts, exponential backoff 2s/4s)); allow manual edit after generation.
+Project Dashboard: Dedicated hub per project showing Active Videos (raw/processing/processed with status chips and retry/cancel actions), AI Script Drafts (latest five with last-edited timestamp and quick open), contextual recommendations driven by niche/sub-niche (e.g., trending hooks), and Quick Actions (Generate Script, Open Teleprompter, Start Recording, Review Processed Clips) with well-defined empty, loading, and error states and offline caching.
+Script Screen: Character count display; two modes: "Paste script" (text box for manual entry) or "Generate with AI" (prompt presets such as Hook/Educate/CTA, tone slider Casual↔Expert, length select 30/60/90s, topic [required], description [optional]); supports revision loops (regenerate section, shorten/lengthen) with version history (max five drafts per project), moderation fallback, and one-tap "Send to Teleprompter" that marks the chosen draft as teleprompter-ready while retaining editable copies.
 Recording: Use Expo Camera; enforce portrait 9:16, 1080x1920, max duration 120s (stop automatically); show storage-used indicator; warn if free space < 500 MB before recording.
 Teleprompter: Overlay 50–60% opacity default 0.55; adjustable WPM 80–200; font size small/medium/large; highlight current line; support start/pause; fallback to static script if overlay fails.
 Feature Selection: Toggles default on for subtitles, music off, filler-word removal on with confirm; background change requires selecting preset (static image) or blur.
@@ -306,3 +306,46 @@ Collaboration and multi-user roles.
 Analytics backend with trends and insights.
 Account system with personalization.
 In-app performance tips and auto-thumbnail generation.
+
+---
+### 2025-10-08 Review Notes (Codex)
+- Add a dedicated Project Dashboard section detailing required data panels (active videos, AI script drafts, quick actions) and empty/loading/error states so the feature can be scoped and built.
+- Extend onboarding requirements to cover sub-niche-specific defaults (script prompts, template suggestions) and ensure persistence flows into new projects.
+- Flesh out the AI scripting experience: specify prompt presets, revision loops, tone/length controls, and the handoff into the teleprompter without copy/paste.
+- Expand the teleprompter spec to include script import from the AI workspace, rehearsal/re-take loops, and UX for multi-take management before committing a recording.
+- Document the end-to-end AI video editing pipeline (auto cuts, B-roll overlays, hook/outro templating) and map each feature to vendor APIs so backend work can start.
+- Resolve the scope conflict with  where background music is marked as a non-goal while this PRD treats it as a core toggle.
+- Mirror this clarification in  by moving background music out of the non-goals list or flagging it as Phase 1 scope.
+- Ensure this scope decision is also reflected in plan.md by moving background music out of the non-goals list or clearly labeling it Phase 1.
+- Correction: the previous "Mirror this clarification" bullet should explicitly call out plan.md; both documents must align on background music scope and timing.
+
+---
+### 2025-10-08 Scope Update Details (Codex)
+**Project Dashboard Hub**
+- Dedicated dashboard screen per project showing Active Videos (raw/processing/processed status chips), AI Script Drafts (latest 5 drafts with last-edited timestamp), and Quick Actions (Generate Script, Open Teleprompter, Start Recording, Review Processed Clips).
+- Include empty, loading, and error states for each panel with retry actions; surfaced metrics should persist through AsyncStorage to support offline mode.
+- Dashboard must display contextual recommendations driven by niche/sub-niche selections (e.g., “Trending hook for Fitness → HIIT”).
+
+**Sub-Niche Onboarding Enhancements**
+- Expand onboarding data model to capture sub-niche default prompts, template packs, and recommended feature presets.
+- Persist selections into new project creation so first project inherits niche + sub-niche without re-entry; allow editing from Settings.
+- Add onboarding success criteria: completion analytics event, ability to revisit and modify selection.
+
+**AI Scripting Studio**
+- Provide prompt presets (Hook, Educate, CTA), tone sliders (Casual/Expert), and length selector (30/60/90s) before hitting the vendor API.
+- Support revision loops: regenerate sections, request shorter/longer edits, and version history capped at 5 drafts per project.
+- One-tap “Send to Teleprompter” flow that stores the chosen script and marks it as “teleprompter-ready” for the recording session.
+
+**Teleprompter Production Flow**
+- Integrate rehearsal mode (scroll without recording) and multi-take management (label, favorite, discard takes before feature selection).
+- Provide script import confirmation when receiving AI drafts; highlight edits relative to previous revision.
+- Add safety checks: warn when WPM mismatch implies >120s recording or when storage <500MB before starting a take.
+
+**AI Video Editing Pipeline**
+- Document automated editing capabilities: intelligent jump cuts, dynamic captions (brand colors), B-roll slot suggestions, intro/outro templates, and music bed layering.
+- Map each feature to target vendor touchpoints (AssemblyAI transcript, Shotstack templates, future B-roll provider) and outline fallback behavior when APIs fail.
+- Define configuration schema returned to the frontend so Feature Selection toggles align with actual backend controls.
+
+**Background Music Scope Alignment**
+- Restate that background music is part of the core editing pipeline; if deferred, label explicitly as Phase 1 in both PRD and plan.md and remove it from MVP acceptance criteria.
+- Capture acceptance test: user toggles music on, selects preset, adjusts volume, and preview honors the setting.

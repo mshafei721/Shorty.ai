@@ -23,7 +23,13 @@ export class MockExportGateway implements ExportGateway {
   async ensureShareableUrl(projectId: string, assetId: string): Promise<string> {
     await this.delay(MOCK_URL_GENERATION_DELAY_MS);
 
-    const artifact = await this.getLatestArtifact(projectId, assetId);
+    const key = `${projectId}_${assetId}`;
+    const artifact = this.artifacts.get(key);
+
+    if (!artifact) {
+      const newArtifact = await this.getLatestArtifact(projectId, assetId);
+      return newArtifact.url!;
+    }
 
     if (artifact.status === 'failed') {
       throw new Error('Artifact processing failed');

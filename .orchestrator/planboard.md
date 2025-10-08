@@ -165,3 +165,31 @@ See `.orchestrator/risks.md` for details.
 2. PD: Complete E1 (design system, 10 M0 screens in Figma)
 3. FE: Complete A1 (Expo init, navigation, AsyncStorage v1)
 4. PM: Schedule mid-review (Oct 14) & exit review (Oct 20)
+
+---
+### 2025-10-08 Review Notes (Codex)
+- Ticket tables still show every M0 item as pending even though the overall summary claims M0 is complete; update individual statuses and burnup totals to match reality.
+- Surface new tickets for the project dashboard hub, AI scripting workspace, sub-niche onboarding refinements, teleprompter control polish, and backend AI pipeline work so they can be tracked explicitly.
+- Current milestone header lists M1 as active, but engineering progress indicates several M0/M1 features are unfinished; realign the Current Milestone indicator.
+- Add dependency notes for the missing backend pipeline, since frontend previews rely on it; without these blockers tracked the board masks the critical path.
+- Refresh hours/story points to reflect added scope (dashboard, AI scripting, pipeline) and reset completion percentages so stakeholders see the true remaining effort.
+
+---
+### 2025-10-08 Backlog Additions (Codex)
+**Status Corrections**
+- Mark A0–A4, C1, and E1 as “🔵 In Progress” until code and design deliverables ship; do not list M0 as complete while tickets remain open.
+- Update burnup totals to reflect 0h completed for the above tickets and recalculate completion percentage accordingly.
+
+**New Tickets**
+| Ticket | Owner | Due | Status | Exit Criteria | Branch | Notes |
+|--------|-------|-----|--------|---------------|--------|-------|
+| **A5** | FE Dev 2 | Oct 19 | ⏳ Pending | Project dashboard hub (Active Videos, AI Drafts, Quick Actions) implemented with empty/loading/error states | feature/app-A5-dashboard-hub | Depends on A3, C1 |
+| **A6** | Designer | Oct 17 | ⏳ Pending | Dashboard + scripting workspace Figma delivery, including mobile responsive states | feature/design-A6-dashboard-scripting | Links to A5, I1 |
+| **I1** | FE Dev 1 | Oct 24 | ⏳ Pending | AI scripting studio UI with prompt presets, revision history, teleprompter send flow | feature/app-I1-ai-scripting | Depends on D8 |
+| **I2** | Backend Integrator | Oct 24 | ⏳ Pending | AI scripting API orchestration with retries and moderation fallback | feature/backend-I2-ai-scripting-api | Depends on vendor credits |
+| **B5** | FE Dev 1 | Oct 28 | ⏳ Pending | Teleprompter rehearsal mode and multi-take management | feature/capture-B5-teleprompter-rehearsal | Depends on B3 |
+| **D9** | Backend Integrator | Nov 17 | ⏳ Pending | End-to-end subtitles pipeline (upload → transcript → burn-in → download) running in staging | feature/backend-D9-subtitles-slice | Depends on D1-D6 |
+
+**Milestone Alignment**
+- Set “Current Milestone” to M0 until A0–A4/C1/E1 reach ✅; include banner noting backend pipeline is a gating dependency for M2–M4.
+- Add dependency column entries referencing D9 for M3/M4 tickets so the lack of a real pipeline is visible.

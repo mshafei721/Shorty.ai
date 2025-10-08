@@ -46,6 +46,7 @@ describe('MockExportGateway', () => {
     });
 
     it('should throw error for failed artifact', async () => {
+      await gateway.getLatestArtifact('project-1', 'asset-1');
       gateway.setArtifactStatus('project-1', 'asset-1', 'failed');
 
       await expect(
@@ -54,7 +55,7 @@ describe('MockExportGateway', () => {
     });
 
     it('should throw error for pending artifact', async () => {
-      const artifact = await gateway.getLatestArtifact('project-1', 'asset-1');
+      await gateway.getLatestArtifact('project-1', 'asset-1');
       gateway.setArtifactStatus('project-1', 'asset-1', 'pending');
 
       await expect(
@@ -63,6 +64,7 @@ describe('MockExportGateway', () => {
     });
 
     it('should throw error for processing artifact', async () => {
+      await gateway.getLatestArtifact('project-1', 'asset-1');
       gateway.setArtifactStatus('project-1', 'asset-1', 'processing');
 
       await expect(

@@ -135,3 +135,22 @@ jest.mock('expo-video', () => {
     }),
   };
 });
+
+jest.mock('expo-sharing', () => ({
+  __esModule: true,
+  isAvailableAsync: jest.fn(() => Promise.resolve(true)),
+  shareAsync: jest.fn(() => Promise.resolve(undefined)),
+}));
+
+jest.mock('expo-media-library', () => ({
+  __esModule: true,
+  requestPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+  getPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+  createAssetAsync: jest.fn((uri) => Promise.resolve({ id: 'mock-asset-id', uri })),
+}));
+
+jest.mock('expo-clipboard', () => ({
+  __esModule: true,
+  setStringAsync: jest.fn(() => Promise.resolve()),
+  getStringAsync: jest.fn(() => Promise.resolve('')),
+}));
