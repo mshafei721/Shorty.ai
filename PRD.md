@@ -11,6 +11,7 @@ Cloud backup, cross-device sync, or user accounts.
 Social feed, in-app comments, or collaboration.
 Custom native modules, on-device heavy video processing, manual timeline editing.
 Advanced analytics backend or CRM integrations.
+Advanced background music customization (user-uploaded tracks, multi-track mixing).
 3. Personas & Use Cases
 Dr. Riley Chen — Solo Healthcare Educator: Posts physiotherapy tips; needs quick script guidance and auto subtitles, values privacy (patient-friendly). Features: onboarding niche selection, teleprompter, auto subtitles, filler-word removal.
 Maya Ortiz — Small Business Finance Marketer: Produces banking micro-campaigns; needs multiple projects per sub-brand, branded backgrounds, reliable export to TikTok/Instagram. Features: project dashboard, background change, intro/outro, share sheet export.
@@ -34,6 +35,24 @@ Story: Project Dashboard Empty State
 Given I open a project with no videos
 When the dashboard loads
 Then I see copy “No videos yet. Tap + to create your first video.” and a centered + button
+Story: Project Dashboard Overview
+Given I have recorded videos and AI script drafts in a project
+When the dashboard loads
+Then I see Active Videos with status chips, AI Script Drafts with last edited times, contextual recommendations, and Quick Actions without needing to refresh
+Given the dashboard fails to load data
+When I tap Retry
+Then the panels attempt to reload and show offline messaging if the device is disconnected
+Story: AI Script Revisions
+Given I generate an AI script
+When I request a shorter version
+Then the system saves a new revision, keeps the previous version in history, and marks the latest as teleprompter-ready when I send it
+Story: Teleprompter Rehearsal & Multi-Take
+Given I open the teleprompter
+When I select Rehearse
+Then the script scrolls without recording and shows estimated duration
+Given I record multiple takes
+When recording stops
+Then I can label, favorite, or discard each take before selecting one to continue
 Story: Script Generation
 Given I tap + in a project
 When I reach Script screen
@@ -91,10 +110,10 @@ Projects: Support unlimited projects until device storage warning; default sort 
 Project Dashboard: Dedicated hub per project showing Active Videos (raw/processing/processed with status chips and retry/cancel actions), AI Script Drafts (latest five with last-edited timestamp and quick open), contextual recommendations driven by niche/sub-niche (e.g., trending hooks), and Quick Actions (Generate Script, Open Teleprompter, Start Recording, Review Processed Clips) with well-defined empty, loading, and error states and offline caching.
 Script Screen: Character count display; two modes: "Paste script" (text box for manual entry) or "Generate with AI" (prompt presets such as Hook/Educate/CTA, tone slider Casual↔Expert, length select 30/60/90s, topic [required], description [optional]); supports revision loops (regenerate section, shorten/lengthen) with version history (max five drafts per project), moderation fallback, and one-tap "Send to Teleprompter" that marks the chosen draft as teleprompter-ready while retaining editable copies.
 Recording: Use Expo Camera; enforce portrait 9:16, 1080x1920, max duration 120s (stop automatically); show storage-used indicator; warn if free space < 500 MB before recording.
-Teleprompter: Overlay 50–60% opacity default 0.55; adjustable WPM 80–200; font size small/medium/large; highlight current line; support start/pause; fallback to static script if overlay fails.
-Feature Selection: Toggles default on for subtitles, music off, filler-word removal on with confirm; background change requires selecting preset (static image) or blur.
-Processing Pipeline: Upload raw MP4 to external storage endpoint; create job with selected features; poll every 2s until status changes; cancel marks job cancelled, removes server tasks if supported; timeout at 20 minutes triggers failure state.
-Local Storage: Raw video saved to FileSystem.documentDirectory/videos/raw/<projectId>/<timestamp>.mp4; processed to .../processed/. Metadata stored in AsyncStorage key projects, videos, scripts.
+Teleprompter: Overlay 50–60% opacity default 0.55; adjustable WPM 80–200; font size small/medium/large; highlight current line; includes rehearsal mode (scroll without recording), script import confirmation highlighting AI changes, multi-take management (label, favorite, discard), storage/WPM guardrails before recording, and fallback to static script if overlay fails.
+Feature Selection: Toggles for subtitles, background change, background music (preset picker + volume slider), intro/outro templates, filler-word removal, and optional B-roll suggestions; defaults: subtitles on, filler removal on (with confirmation tooltip), music off until configured; background change requires preset or blur selection.
+Processing Pipeline: Upload raw MP4 to external storage endpoint; create job with selected features (subtitles, filler-word removal, intelligent jump cuts, dynamic captions with brand colors, optional intro/outro templates, background music layering, future B-roll slots); orchestrator must map each feature to vendor APIs (AssemblyAI transcript + timestamps, Shotstack composition templates, music/B-roll providers) with retries/backoff, emit progress updates (Queued/Uploading/Processing), support cancellation cleanup, enforce 20-minute timeout, and return configuration metadata the frontend uses to display applied edits.
+Local Storage: Raw video saved to FileSystem.documentDirectory/videos/raw/<projectId>/<timestamp>.mp4; processed to .../processed/. Metadata stored in AsyncStorage keys projects, videos, scripts, dashboardState (cached panels), userProfile (niche/sub-niche presets), and featurePresets.
 Preview: Play via Expo AV; display feature summary; allow re-open Feature Selection to rerun processing.
 Export: Use Expo Sharing/Share API; ensure file exists before call; after export, mark video exportedAt.
 Error Handling: Permissions denied: show modal with instructions and “Open Settings” deep link; No storage: block new recording until space freed; Network offline during processing: show offline banner, queue retry; Cancelled job: revert to Feature Selection; Failed job: display reason, allow retry or download raw.
@@ -125,10 +144,10 @@ Deep link: shortyai://project/{id} opens dashboard.
 Back navigation always returns to previous step; processing screen prevents accidental exit with confirm dialog.
 9. Data Model
 Project: { id: string(uuid), name: string, niche: string, subNiche: string, createdAt: ISO8601, updatedAt: ISO8601, isDeleted: boolean } stored in AsyncStorage projects.
-Script: { id: string(uuid), projectId: string, text: string, wordsCount: number, wpmTarget: number, createdAt: ISO8601, source: 'ai'|'manual' } stored in AsyncStorage scripts.
+Script: { id: string(uuid), projectId: string, text: string, wordsCount: number, wpmTarget: number, createdAt: ISO8601, source: 'ai'|'manual', tone: 'casual'|'expert', lengthTargetSec: number, revision: number, parentId: string|null, isTeleprompterReady: boolean } stored in AsyncStorage scripts.
 VideoAsset: { id: string(uuid), projectId: string, type: 'raw'|'processed', scriptId: string|null, localUri: string, durationSec: number, sizeBytes: number, createdAt: ISO8601, exportedAt: ISO8601|null, status: 'ready'|'processing'|'failed'|'cancelled' } stored in AsyncStorage videos.
-FeatureSelections: { videoId: string, subtitles: boolean, backgroundChange: { enabled: boolean, presetId: string|null }, backgroundMusic: { enabled: boolean, trackId: string|null, volume: number }, introOutro: { enabled: boolean, templateId: string|null }, fillerWordRemoval: boolean }.
-ProcessingJob: { id: string(uuid), videoId: string, status: 'idle'|'uploading'|'queued'|'processing'|'complete'|'failed'|'cancelled', progress: number(0-100), requestedFeatures: FeatureSelections, startedAt: ISO8601, completedAt: ISO8601|null, error: { code: string, message: string }|null, retries: number }.
+FeatureSelections: { videoId: string, subtitles: boolean, backgroundChange: { enabled: boolean, presetId: string|null }, backgroundMusic: { enabled: boolean, trackId: string|null, volume: number }, introOutro: { enabled: boolean, templateId: string|null }, fillerWordRemoval: boolean, broll: { enabled: boolean, libraryId: string|null }, jumpCuts: { enabled: boolean, aggressiveness: 'low'|'medium'|'high' } }.
+ProcessingJob: { id: string(uuid), videoId: string, status: 'idle'|'uploading'|'queued'|'processing'|'complete'|'failed'|'cancelled', progress: number(0-100), requestedFeatures: FeatureSelections, appliedFeatures: FeatureSelections|null, configuration: { captionsTheme: string, musicTrackId: string|null, introTemplateId: string|null, outroTemplateId: string|null }|null, startedAt: ISO8601, completedAt: ISO8601|null, error: { code: string, message: string }|null, retries: number }.
 File naming: raw raw_<projectId>_<timestamp>.mp4; processed processed_<videoId>_<timestamp>.mp4; temp uploads stored /temp/<videoId>.mp4 and deleted post-success.
 All metadata persisted via AsyncStorage; consider migration version appStateVersion for schema updates.
 10. Teleprompter Spec
@@ -141,8 +160,12 @@ Start countdown 3-2-1 overlay before recording; teleprompter sync begins at reco
 Timing: auto-scroll based on WPM; allow manual swipe to adjust position (locks after release).
 Pause behavior: overlay dims to 40% opacity; resume resets to exact position.
 Safety: if script empty, teleprompter hidden and display message “Add script to enable teleprompter.”
+Rehearsal Mode: enable scroll preview without recording and surface estimated duration before entering capture state.
+Multi-take Management: after each take, prompt to label/favorite/discard; maintain ordered list until user selects final take for processing.
+AI Script Import: when a teleprompter-ready draft is received, show diff highlighting changes since last version and request confirmation before replacing live script.
+Guardrails: warn when estimated duration exceeds 120s given current WPM and script length, and block recording when available storage <500 MB until cleared.
 11. Create Flow Spec
-Sequence: Tap + → Script screen (choose "Paste script" or "Generate with AI") → If paste: enter text in text box → If AI: provide topic (required) + short description (optional), AI researches and generates script → Validate length (50–500 words recommended) → Continue → Permissions prompts → Record (countdown, teleprompter) → Stop or auto-stop at 120s → Review raw preview optional → Feature Selection toggles → Confirm → Processing status → Preview → Export.
+Sequence: Tap + → Script screen (choose "Paste script" or "Generate with AI") → If paste: enter text; if AI: configure preset, tone, length, topic, description → AI generates draft with option to revise/shorten/extend and review version history → Send selected draft to teleprompter → Optional rehearsal mode → Permissions prompts → Record (countdown, teleprompter) with ability to pause/resume and capture multiple takes → Select preferred take → Feature Selection toggles → Confirm → Processing status → Preview → Export.
 Validations: require script text ≥ 20 words before record (unless user overrides with confirmation). Warn if script length implies >120s (calc by words/WPM).
 Recording Settings: portrait only, 9:16 at 30fps, audio 44.1 kHz mono AAC; allow retake (discard old raw after confirmation). Provide stabilization toggle default on.
 Feature Selection UX: toggles with sub-settings (music track picker from curated list, background presets). Display estimated processing time per feature (subtitles +1 min, background change +2 min).
@@ -181,6 +204,12 @@ Request JSON:
 }
 Response 202: { "jobId": "uuid", "estimatedSeconds": 180 }
 Handle errors: 400 invalid feature combo, 429 rate limit (retry after header), 503 service unavailable (retry after 5s exponential).
+Pipeline Steps:
+- AssemblyAI transcription (or Deepgram fallback) returns timestamps used for subtitles and filler-word trimming list; orchestrator must produce caption file in brand colors supplied by frontend config.
+- Jump-cut generator removes filler segments while keeping ±0.3s padding to soften cuts; generate preview of removed ranges for frontend display.
+- Shotstack (or equivalent) composition template combines edited timeline with intro/outro templates, dynamic captions, optional background change, and slots for B-roll overlays.
+- Music service selects preset track and applies volume mixing (default 0.4) beneath voice audio; store mixing metadata so frontend preview slider remains in sync.
+- Orchestrator persisting configuration: write final feature application summary (captions, cuts, music track ID, templates used) into job payload returned to client.
 Poll Job Status
 
 GET /jobs/{jobId}
@@ -309,6 +338,7 @@ In-app performance tips and auto-thumbnail generation.
 
 ---
 ### 2025-10-08 Review Notes (Codex)
+- [Done] Integrated into core PRD sections on 2025-10-08; keep the checklist below for historical traceability.
 - Add a dedicated Project Dashboard section detailing required data panels (active videos, AI script drafts, quick actions) and empty/loading/error states so the feature can be scoped and built.
 - Extend onboarding requirements to cover sub-niche-specific defaults (script prompts, template suggestions) and ensure persistence flows into new projects.
 - Flesh out the AI scripting experience: specify prompt presets, revision loops, tone/length controls, and the handoff into the teleprompter without copy/paste.
