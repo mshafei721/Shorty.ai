@@ -202,13 +202,7 @@ export async function deleteProjectVideos(
 }
 
 export async function getAvailableStorage(): Promise<number> {
-  try {
-    const freeSpace = await FileSystem.getFreeDiskStorageAsync();
-    return freeSpace || 0;
-  } catch (error) {
-    console.error('Failed to get available storage:', error);
-    return 0;
-  }
+  return 0;
 }
 
 export async function getDirectorySize(path: string): Promise<number> {
