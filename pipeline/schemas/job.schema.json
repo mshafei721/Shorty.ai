@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://shorty.ai/schemas/job.json",
+  "title": "ProcessingJob",
+  "type": "object",
+  "required": ["jobId", "projectId", "assetId", "stages", "status", "progressPct", "createdAt"],
+  "properties": {
+    "jobId": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "projectId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "assetId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "correlationId": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["idle", "running", "blocked", "succeeded", "failed", "cancelled"]
+    },
+    "progressPct": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "stages": {
+      "type": "object",
+      "properties": {
+        "upload": { "$ref": "#/definitions/stageState" },
+        "transcribe": { "$ref": "#/definitions/stageState" },
+        "nlp": { "$ref": "#/definitions/stageState" },
+        "compose": { "$ref": "#/definitions/stageState" },
+        "encode": { "$ref": "#/definitions/stageState" },
+        "done": { "$ref": "#/definitions/stageState" },
+        "failed": { "$ref": "#/definitions/stageState" }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "properties": {
+        "objectUrl": { "type": "string" },
+        "transcriptId": { "type": "string" },
+        "timelineId": { "type": "string" },
+        "renderId": { "type": "string" },
+        "encodeId": { "type": "string" },
+        "assetUrl": { "type": "string" },
+        "checksum": { "type": "string" }
+      }
+    },
+    "logs": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "definitions": {
+    "stageState": {
+      "type": "object",
+      "required": ["status", "attempts"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["idle", "running", "blocked", "succeeded", "failed"]
+        },
+        "attempts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "startedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": { "type": "number" }
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": { "type": "string" },
+            "message": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

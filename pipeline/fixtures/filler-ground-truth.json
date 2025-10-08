@@ -1,0 +1,23 @@
+[
+  {
+    "startMs": 400,
+    "endMs": 600,
+    "tokenIdxStart": 1,
+    "tokenIdxEnd": 1,
+    "label": "filler"
+  },
+  {
+    "startMs": 2600,
+    "endMs": 3000,
+    "tokenIdxStart": 7,
+    "tokenIdxEnd": 8,
+    "label": "silence"
+  },
+  {
+    "startMs": 3000,
+    "endMs": 3200,
+    "tokenIdxStart": 8,
+    "tokenIdxEnd": 8,
+    "label": "filler"
+  }
+]
