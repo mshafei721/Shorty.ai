@@ -10,11 +10,24 @@ import NicheSelectionScreen from '../screens/NicheSelectionScreen';
 import ProjectsListScreen from '../screens/ProjectsListScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import RecordScreen from '../screens/RecordScreen';
+import FeaturesScreen from '../features/m3/screens/FeaturesScreen';
+import PreviewScreen from '../features/m3/screens/PreviewScreen';
 
 export type RootStackParamList = {
   Onboarding: undefined;
   Main: undefined;
   Record: undefined;
+  Features: {
+    projectId: string;
+    assetId: string;
+    rawVideoUri: string;
+  };
+  Preview: {
+    projectId: string;
+    assetId: string;
+    rawVideoUri: string;
+    preset: any;
+  };
 };
 
 export type OnboardingStackParamList = {
@@ -50,6 +63,8 @@ const linking = {
         },
       },
       Record: 'record',
+      Features: 'features/:projectId/:assetId',
+      Preview: 'preview/:projectId/:assetId',
     },
   },
 };
@@ -133,6 +148,24 @@ export function RootNavigator() {
             headerShown: true,
             title: 'Record Video',
             presentation: 'modal'
+          }}
+        />
+        <RootStack.Screen
+          name="Features"
+          component={FeaturesScreen}
+          options={{
+            headerShown: true,
+            title: 'Edit Features',
+            presentation: 'card'
+          }}
+        />
+        <RootStack.Screen
+          name="Preview"
+          component={PreviewScreen}
+          options={{
+            headerShown: true,
+            title: 'Preview',
+            presentation: 'card'
           }}
         />
       </RootStack.Navigator>

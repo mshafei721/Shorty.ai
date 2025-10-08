@@ -1,0 +1,414 @@
+/**
+ * Preview Screen
+ *
+ * Video player with caption overlay, draft generation, and playback controls.
+ * Supports raw video playback and M2 draft artifact playback.
+ *
+ * @module features/m3/screens/PreviewScreen
+ */
+
+import React, { useEffect, useState, useRef } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
+import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
+import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
+import type { M3Preset, PreviewState } from '../types';
+import {
+  createInitialContext,
+  transition,
+  loadPreviewData,
+  generateDraft,
+  type PreviewMachineState,
+} from '../state/previewMachine';
+
+type RouteParams = {
+  PreviewScreen: {
+    projectId: string;
+    assetId: string;
+    rawVideoUri: string;
+    preset: M3Preset;
+  };
+};
+
+export default function PreviewScreen() {
+  const navigation = useNavigation();
+  const route = useRoute<RouteProp<RouteParams, 'PreviewScreen'>>();
+  const { projectId, assetId, rawVideoUri, preset } = route.params;
+
+  const [machine, setMachine] = useState<PreviewMachineState>({
+    state: 'idle',
+    context: createInitialContext(),
+  });
+
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [positionMs, setPositionMs] = useState(0);
+  const videoRef = useRef<Video>(null);
+
+  useEffect(() => {
+    initializePreview();
+  }, []);
+
+  const initializePreview = async () => {
+    try {
+      const next = await transition(machine, {
+        type: 'LOAD_DATA',
+        projectId,
+        assetId,
+        rawVideoUri,
+      });
+      setMachine(next);
+
+      const data = await loadPreviewData(projectId, assetId);
+
+      const ready = await transition(
+        { ...next, context: { ...next.context, ...data } },
+        { type: 'DATA_OK' }
+      );
+      setMachine(ready);
+    } catch (error) {
+      const err = await transition(machine, {
+        type: 'DATA_ERR',
+        error: error instanceof Error ? error.message : 'Failed to load preview data',
+      });
+      setMachine(err);
+    }
+  };
+
+  const handleGenerateDraft = async () => {
+    try {
+      const generating = await transition(machine, {
+        type: 'GENERATE_DRAFT',
+        preset,
+      });
+      setMachine(generating);
+
+      const artifactUrl = await generateDraft(projectId, assetId, preset, pct => {
+        setMachine(prev => ({
+          ...prev,
+          context: { ...prev.context, progressPct: pct },
+        }));
+      });
+
+      const done = await transition(machine, {
+        type: 'DRAFT_OK',
+        artifactUrl,
+      });
+      setMachine(done);
+
+      Alert.alert('Success', 'Draft render complete!');
+    } catch (error) {
+      const err = await transition(machine, {
+        type: 'DRAFT_ERR',
+        error: error instanceof Error ? error.message : 'Draft generation failed',
+      });
+      setMachine(err);
+      Alert.alert('Error', machine.context.error || 'Failed to generate draft');
+    }
+  };
+
+  const handlePlayPause = async () => {
+    if (!videoRef.current) return;
+
+    if (isPlaying) {
+      await videoRef.current.pauseAsync();
+    } else {
+      await videoRef.current.playAsync();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => {
+    if (status.isLoaded) {
+      setPositionMs(status.positionMillis);
+      setIsPlaying(status.isPlaying);
+    }
+  };
+
+  const getCurrentCaption = (): string | null => {
+    const { transcript } = machine.context;
+    if (!transcript || !preset.captions.enabled) return null;
+
+    const token = transcript.tokens.find(
+      t => positionMs >= t.startMs && positionMs <= t.endMs
+    );
+
+    if (!token) return null;
+
+    const index = transcript.tokens.indexOf(token);
+    const windowSize = 5;
+    const start = Math.max(0, index - Math.floor(windowSize / 2));
+    const end = Math.min(transcript.tokens.length, start + windowSize);
+
+    return transcript.tokens
+      .slice(start, end)
+      .map(t => t.text)
+      .join(' ');
+  };
+
+  const videoSource = machine.context.draftArtifactUrl || rawVideoUri;
+  const caption = getCurrentCaption();
+
+  return (
+    <View style={styles.container}>
+      {/* Loading State */}
+      {machine.state === 'loading_data' && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#007AFF" />
+          <Text style={styles.loadingText}>Loading preview data...</Text>
+        </View>
+      )}
+
+      {/* Error State */}
+      {machine.state === 'error' && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorIcon}>⚠️</Text>
+          <Text style={styles.errorText}>{machine.context.error}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={initializePreview}>
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* Ready/Playing State */}
+      {(machine.state === 'ready' ||
+        machine.state === 'draft_ready' ||
+        machine.state === 'generating_draft') && (
+        <>
+          {/* Video Player */}
+          <View style={styles.playerContainer}>
+            <Video
+              ref={videoRef}
+              source={{ uri: videoSource }}
+              style={styles.video}
+              resizeMode={ResizeMode.CONTAIN}
+              shouldPlay={false}
+              onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
+              testID="preview-video"
+            />
+
+            {/* Caption Overlay */}
+            {caption && (
+              <View
+                style={[
+                  styles.captionContainer,
+                  preset.captions.style === 'boxed' && styles.captionBoxed,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.captionText,
+                    { fontSize: preset.captions.size },
+                    preset.captions.style === 'shadow' && styles.captionShadow,
+                    preset.captions.style === 'outline' && styles.captionOutline,
+                  ]}
+                  testID="caption-text"
+                >
+                  {caption}
+                </Text>
+              </View>
+            )}
+
+            {/* Play/Pause Button */}
+            <TouchableOpacity
+              style={styles.playButton}
+              onPress={handlePlayPause}
+              testID="play-pause-button"
+            >
+              <Text style={styles.playButtonText}>{isPlaying ? '⏸' : '▶'}</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Generating Draft Overlay */}
+          {machine.state === 'generating_draft' && (
+            <View style={styles.generatingOverlay}>
+              <ActivityIndicator size="large" color="#FFF" />
+              <Text style={styles.generatingText}>
+                Generating draft... {machine.context.progressPct}%
+              </Text>
+            </View>
+          )}
+
+          {/* Actions */}
+          <View style={styles.actions}>
+            {machine.state === 'ready' && (
+              <TouchableOpacity
+                style={styles.draftButton}
+                onPress={handleGenerateDraft}
+                testID="generate-draft-button"
+              >
+                <Text style={styles.draftButtonText}>Generate Draft</Text>
+              </TouchableOpacity>
+            )}
+
+            {machine.state === 'draft_ready' && (
+              <View style={styles.draftReady}>
+                <Text style={styles.draftReadyText}>✓ Draft Ready</Text>
+              </View>
+            )}
+
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
+              testID="back-button"
+            >
+              <Text style={styles.backButtonText}>← Back</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: '#FFF',
+    fontSize: 16,
+    marginTop: 16,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 32,
+  },
+  errorIcon: {
+    fontSize: 64,
+    marginBottom: 16,
+  },
+  errorText: {
+    color: '#FFF',
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  retryButton: {
+    backgroundColor: '#007AFF',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+  },
+  retryButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  playerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000',
+  },
+  video: {
+    width: '100%',
+    aspectRatio: 9 / 16,
+  },
+  captionContainer: {
+    position: 'absolute',
+    bottom: 120,
+    left: 16,
+    right: 16,
+    alignItems: 'center',
+  },
+  captionBoxed: {
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    borderRadius: 8,
+    padding: 12,
+  },
+  captionText: {
+    color: '#FFF',
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  captionShadow: {
+    textShadowColor: '#000',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
+  },
+  captionOutline: {
+    textShadowColor: '#000',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+  playButton: {
+    position: 'absolute',
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  playButtonText: {
+    fontSize: 32,
+    color: '#FFF',
+  },
+  generatingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  generatingText: {
+    color: '#FFF',
+    fontSize: 18,
+    marginTop: 16,
+    fontWeight: '600',
+  },
+  actions: {
+    padding: 16,
+    gap: 12,
+  },
+  draftButton: {
+    backgroundColor: '#007AFF',
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+  draftButtonText: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  draftReady: {
+    backgroundColor: '#34C759',
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+  draftReadyText: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  backButton: {
+    backgroundColor: '#333',
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+  backButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});
