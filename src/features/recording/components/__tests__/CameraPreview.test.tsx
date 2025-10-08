@@ -8,10 +8,12 @@ describe('CameraPreview', () => {
     isPaused: false,
     elapsedMs: 0,
     maxDurationMs: 120000,
+    facing: 'back' as const,
     onStartPress: jest.fn(),
     onStopPress: jest.fn(),
     onPausePress: jest.fn(),
     onResumePress: jest.fn(),
+    onFlipCamera: jest.fn(),
   };
 
   beforeEach(() => {
