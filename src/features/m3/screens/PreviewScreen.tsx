@@ -2,12 +2,12 @@
  * Preview Screen
  *
  * Video player with caption overlay, draft generation, and playback controls.
- * Supports raw video playback and M2 draft artifact playback.
+ * Uses expo-video (SDK 54 compatible).
  *
  * @module features/m3/screens/PreviewScreen
  */
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -17,8 +17,8 @@ import {
   Alert,
 } from 'react-native';
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
-import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
-import type { M3Preset, PreviewState } from '../types';
+import { VideoView, useVideoPlayer } from 'expo-video';
+import type { M3Preset } from '../types';
 import {
   createInitialContext,
   transition,
@@ -46,9 +46,23 @@ export default function PreviewScreen() {
     context: createInitialContext(),
   });
 
-  const [isPlaying, setIsPlaying] = useState(false);
   const [positionMs, setPositionMs] = useState(0);
-  const videoRef = useRef<Video>(null);
+
+  const videoSource = machine.context.draftArtifactUrl || rawVideoUri;
+  const player = useVideoPlayer(videoSource, player => {
+    player.loop = false;
+    player.play();
+  });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (player) {
+        setPositionMs(player.currentTime * 1000);
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [player]);
 
   useEffect(() => {
     initializePreview();
@@ -112,21 +126,13 @@ export default function PreviewScreen() {
     }
   };
 
-  const handlePlayPause = async () => {
-    if (!videoRef.current) return;
+  const handlePlayPause = () => {
+    if (!player) return;
 
-    if (isPlaying) {
-      await videoRef.current.pauseAsync();
+    if (player.playing) {
+      player.pause();
     } else {
-      await videoRef.current.playAsync();
-    }
-    setIsPlaying(!isPlaying);
-  };
-
-  const handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => {
-    if (status.isLoaded) {
-      setPositionMs(status.positionMillis);
-      setIsPlaying(status.isPlaying);
+      player.play();
     }
   };
 
@@ -151,7 +157,6 @@ export default function PreviewScreen() {
       .join(' ');
   };
 
-  const videoSource = machine.context.draftArtifactUrl || rawVideoUri;
   const caption = getCurrentCaption();
 
   return (
@@ -182,14 +187,11 @@ export default function PreviewScreen() {
         <>
           {/* Video Player */}
           <View style={styles.playerContainer}>
-            <Video
-              ref={videoRef}
-              source={{ uri: videoSource }}
+            <VideoView
               style={styles.video}
-              resizeMode={ResizeMode.CONTAIN}
-              shouldPlay={false}
-              onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
-              testID="preview-video"
+              player={player}
+              contentFit="contain"
+              nativeControls={false}
             />
 
             {/* Caption Overlay */}
@@ -220,7 +222,9 @@ export default function PreviewScreen() {
               onPress={handlePlayPause}
               testID="play-pause-button"
             >
-              <Text style={styles.playButtonText}>{isPlaying ? '⏸' : '▶'}</Text>
+              <Text style={styles.playButtonText}>
+                {player?.playing ? '⏸' : '▶'}
+              </Text>
             </TouchableOpacity>
           </View>
 
