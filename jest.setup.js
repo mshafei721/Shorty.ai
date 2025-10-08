@@ -110,3 +110,28 @@ jest.mock('expo-audio', () => ({
   requestRecordingPermissionsAsync: jest.fn(),
   getRecordingPermissionsAsync: jest.fn(),
 }));
+
+jest.mock('expo-video', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+
+  const mockPlayer = {
+    playing: false,
+    currentTime: 0,
+    loop: false,
+    play: jest.fn(),
+    pause: jest.fn(),
+    replace: jest.fn(),
+  };
+
+  return {
+    __esModule: true,
+    VideoView: React.forwardRef((props, ref) => {
+      return React.createElement(View, { ...props, ref, testID: 'video-view' }, props.children);
+    }),
+    useVideoPlayer: jest.fn((source, setup) => {
+      if (setup) setup(mockPlayer);
+      return mockPlayer;
+    }),
+  };
+});
