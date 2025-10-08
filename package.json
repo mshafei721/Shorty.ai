@@ -7,9 +7,18 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "web:dev": "expo start --web",
+    "web:debug": "expo start --web --https",
     "test": "jest",
+    "test:unit": "jest --testPathIgnorePatterns=e2e",
+    "test:coverage": "jest --coverage",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "scan:mocks": "grep -rn --include='*.ts' --include='*.tsx' --exclude-dir=__tests__ --exclude-dir=__mocks__ --exclude-dir=node_modules --exclude='*.test.*' --exclude='*.spec.*' -E \"from ['\\\"].*/__mocks__/|from ['\\\"].*/mocks/|MockM2Gateway|from ['\\\"].*/stubs/\" src/ && exit 1 || exit 0",
+    "e2e:web": "playwright test",
+    "e2e:web:ui": "playwright test --ui",
+    "bundle:analyze": "expo export --platform web && npx source-map-explorer web-build/static/js/*.js",
+    "ci": "npm run typecheck && npm run lint && npm run scan:mocks && npm run test:coverage"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
@@ -39,16 +48,19 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.0",
+    "@playwright/test": "^1.56.0",
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-native": "^12.8.1",
-    "@types/jest": "^29.5.11",
+    "@types/jest": "^29.5.14",
     "@types/react": "~19.1.10",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "eslint": "^8.57.1",
     "jest": "^29.7.0",
     "jest-expo": "~54.0.0",
-    "react-test-renderer": "^19.1.0"
+    "playwright": "^1.56.0",
+    "react-test-renderer": "^19.1.0",
+    "ts-jest": "^29.4.4"
   },
   "jest": {
     "preset": "react-native",
