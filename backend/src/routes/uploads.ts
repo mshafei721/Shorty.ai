@@ -18,7 +18,7 @@ router.post('/', upload.single('video'), async (req: Request, res: Response) => 
     const video = await processUploadedFile(req.file);
     registerUploadedVideo(video);
 
-    res.status(201).json({
+    return res.status(201).json({
       video: {
         id: video.id,
         originalName: video.originalName,
@@ -28,7 +28,7 @@ router.post('/', upload.single('video'), async (req: Request, res: Response) => 
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Upload failed';
-    res.status(500).json({
+    return res.status(500).json({
       error: {
         code: 'UPLOAD_FAILED',
         message,

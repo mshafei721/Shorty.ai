@@ -56,7 +56,7 @@ router.post('/', async (req: Request, res: Response) => {
       console.error(`Job ${job.id} processing error:`, error);
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       job: {
         id: job.id,
         videoId: job.videoId,
@@ -68,7 +68,7 @@ router.post('/', async (req: Request, res: Response) => {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Job creation failed';
-    res.status(500).json({
+    return res.status(500).json({
       error: {
         code: 'JOB_CREATION_FAILED',
         message,
@@ -91,7 +91,7 @@ router.get('/:jobId', (req: Request, res: Response) => {
       });
     }
 
-    res.json({
+    return res.json({
       job: {
         id: job.id,
         videoId: job.videoId,
@@ -106,7 +106,7 @@ router.get('/:jobId', (req: Request, res: Response) => {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to get job';
-    res.status(500).json({
+    return res.status(500).json({
       error: {
         code: 'GET_JOB_FAILED',
         message,
@@ -153,13 +153,13 @@ router.post('/:jobId/cancel', (req: Request, res: Response) => {
       });
     }
 
-    res.json({
+    return res.json({
       message: 'Job cancelled successfully',
       jobId,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to cancel job';
-    res.status(500).json({
+    return res.status(500).json({
       error: {
         code: 'CANCEL_FAILED',
         message,

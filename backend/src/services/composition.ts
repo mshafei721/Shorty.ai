@@ -9,15 +9,16 @@ const MAX_POLL_ATTEMPTS = 300;
 interface ShotstackClip {
   asset: {
     type: string;
-    src: string;
+    src?: string;
   };
   start: number;
   length: number;
   fit?: string;
   scale?: number;
+  position?: string;
 }
 
-interface ShotstackSubtitleClip extends ShotstackClip {
+interface ShotstackSubtitleClip {
   asset: {
     type: 'html';
     html: string;
@@ -25,6 +26,8 @@ interface ShotstackSubtitleClip extends ShotstackClip {
     width: number;
     height: number;
   };
+  start: number;
+  length: number;
   position: string;
 }
 
