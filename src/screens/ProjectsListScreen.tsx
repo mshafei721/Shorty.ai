@@ -43,55 +43,7 @@ export default function ProjectsListScreen() {
   };
 
   const handleCreateProject = () => {
-    if (Platform.OS === 'web') {
-      // Web fallback - prompt not supported
-      Alert.alert('Create Project', 'Project creation requires native platform', [{ text: 'OK' }]);
-      return;
-    }
-
-    Alert.prompt(
-      'Create New Project',
-      'Enter project name:',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Create',
-          onPress: async (projectName?: string) => {
-            if (!projectName || projectName.trim().length === 0) {
-              Alert.alert('Error', 'Project name cannot be empty');
-              return;
-            }
-
-            try {
-              const userProfileData = await AsyncStorage.getItem('userProfile');
-              const profile = userProfileData ? JSON.parse(userProfileData) : {};
-
-              const newProject: Project = {
-                id: `project_${Date.now()}`,
-                name: projectName.trim(),
-                niche: profile.niche || 'General',
-                subNiche: profile.subNiche || '',
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                isDeleted: false,
-              };
-
-              const existingProjects = await AsyncStorage.getItem('projects');
-              const projects: Project[] = existingProjects ? JSON.parse(existingProjects) : [];
-              projects.push(newProject);
-              await AsyncStorage.setItem('projects', JSON.stringify(projects));
-
-              setProjects(projects.filter(p => !p.isDeleted));
-              Alert.alert('Success', `Project "${projectName}" created!`);
-            } catch (error) {
-              console.error('Failed to create project:', error);
-              Alert.alert('Error', 'Failed to create project. Please try again.');
-            }
-          },
-        },
-      ],
-      'plain-text'
-    );
+    navigation.navigate('CreateProject');
   };
 
   const renderEmptyState = () => (
@@ -106,7 +58,7 @@ export default function ProjectsListScreen() {
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.createButton, styles.recordButton]}
-        onPress={() => navigation.navigate('Record')}
+        onPress={() => navigation.navigate('Record', {})}
       >
         <Text style={styles.createButtonText}>Test Record Screen</Text>
       </TouchableOpacity>

@@ -11,16 +11,27 @@ import ProjectsListScreen from '../screens/ProjectsListScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import RecordScreen from '../screens/RecordScreen';
 import ProjectDashboardScreen from '../screens/ProjectDashboardScreen';
+import CreateProjectScreen from '../screens/CreateProjectScreen';
+import ScriptStudioWrapper from '../features/scripting/screens/ScriptStudioWrapper';
 import FeaturesScreen from '../features/m3/screens/FeaturesScreen';
 import PreviewScreen from '../features/m3/screens/PreviewScreen';
 
 export type RootStackParamList = {
   Onboarding: undefined;
   Main: undefined;
+  CreateProject: undefined;
   ProjectDashboard: {
     projectId: string;
   };
-  Record: undefined;
+  ScriptStudio: {
+    projectId: string;
+    niche?: string;
+    subNiche?: string;
+  };
+  Record: {
+    scriptId?: string;
+    projectId?: string;
+  };
   Features: {
     projectId: string;
     assetId: string;
@@ -66,7 +77,9 @@ const linking = {
           Settings: 'settings',
         },
       },
+      CreateProject: 'create-project',
       ProjectDashboard: 'projects/:projectId',
+      ScriptStudio: 'script-studio/:projectId',
       Record: 'record',
       Features: 'features/:projectId/:assetId',
       Preview: 'preview/:projectId/:assetId',
@@ -147,12 +160,30 @@ export function RootNavigator() {
         <RootStack.Screen name="Onboarding" component={OnboardingNavigator} />
         <RootStack.Screen name="Main" component={MainNavigator} />
         <RootStack.Screen
+          name="CreateProject"
+          component={CreateProjectScreen}
+          options={{
+            headerShown: true,
+            title: 'Create Project',
+            presentation: 'modal'
+          }}
+        />
+        <RootStack.Screen
           name="ProjectDashboard"
           component={ProjectDashboardScreen}
           options={{
             headerShown: true,
             title: 'Project Dashboard',
             presentation: 'card'
+          }}
+        />
+        <RootStack.Screen
+          name="ScriptStudio"
+          component={ScriptStudioWrapper}
+          options={{
+            headerShown: true,
+            title: 'AI Script Studio',
+            presentation: 'modal'
           }}
         />
         <RootStack.Screen

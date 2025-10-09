@@ -108,17 +108,19 @@ export default function ProjectDashboardScreen() {
   };
 
   const handleCreateProject = () => {
-    // TODO: Implement CreateProject screen
-    console.log('Create project clicked');
+    navigation.navigate('CreateProject');
   };
 
   const handleGenerateScript = () => {
-    // TODO: Implement ScriptGenerator screen
-    console.log('Generate script clicked');
+    navigation.navigate('ScriptStudio', {
+      projectId,
+      niche: currentProject?.niche,
+      subNiche: currentProject?.subNiche,
+    });
   };
 
   const handleStartRecording = () => {
-    navigation.navigate('Record' as never);
+    navigation.navigate('Record', {});
   };
 
   const getVideosByProject = (projectId: string) => {
