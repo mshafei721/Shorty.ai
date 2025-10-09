@@ -3,9 +3,10 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, Platform } f
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import type { RootStackParamList } from '../navigation/RootNavigator';
 import type { Project } from '../storage/schema';
 
-type NavigationProp = StackNavigationProp<any>;
+type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 export default function ProjectsListScreen() {
   const navigation = useNavigation<NavigationProp>();
@@ -113,16 +114,18 @@ export default function ProjectsListScreen() {
   );
 
   const handleProjectPress = (project: Project) => {
-    Alert.alert(
-      project.name,
-      `Project Dashboard\n\nNiche: ${project.niche}\nCreated: ${new Date(project.createdAt).toLocaleDateString()}\n\nProject dashboard coming soon!`,
-      [{ text: 'OK' }]
-    );
+    navigation.navigate('ProjectDashboard', { projectId: project.id });
   };
 
   const renderProject = ({ item }: { item: Project }) => (
-    <TouchableOpacity style={styles.projectCard} onPress={() => handleProjectPress(item)}>
-      <Text style={styles.projectName}>{item.name}</Text>
+    <TouchableOpacity
+      style={styles.projectCard}
+      onPress={() => handleProjectPress(item)}
+      testID="project-card"
+      accessibilityRole="button"
+      accessibilityLabel={`Open project ${item.name}`}
+    >
+      <Text style={styles.projectName} testID="project-name">{item.name}</Text>
       <Text style={styles.projectMeta}>
         {item.niche} • {new Date(item.createdAt).toLocaleDateString()}
       </Text>

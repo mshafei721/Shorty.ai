@@ -10,12 +10,16 @@ import NicheSelectionScreen from '../screens/NicheSelectionScreen';
 import ProjectsListScreen from '../screens/ProjectsListScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import RecordScreen from '../screens/RecordScreen';
+import ProjectDashboardScreen from '../screens/ProjectDashboardScreen';
 import FeaturesScreen from '../features/m3/screens/FeaturesScreen';
 import PreviewScreen from '../features/m3/screens/PreviewScreen';
 
 export type RootStackParamList = {
   Onboarding: undefined;
   Main: undefined;
+  ProjectDashboard: {
+    projectId: string;
+  };
   Record: undefined;
   Features: {
     projectId: string;
@@ -62,6 +66,7 @@ const linking = {
           Settings: 'settings',
         },
       },
+      ProjectDashboard: 'projects/:projectId',
       Record: 'record',
       Features: 'features/:projectId/:assetId',
       Preview: 'preview/:projectId/:assetId',
@@ -141,6 +146,15 @@ export function RootNavigator() {
       >
         <RootStack.Screen name="Onboarding" component={OnboardingNavigator} />
         <RootStack.Screen name="Main" component={MainNavigator} />
+        <RootStack.Screen
+          name="ProjectDashboard"
+          component={ProjectDashboardScreen}
+          options={{
+            headerShown: true,
+            title: 'Project Dashboard',
+            presentation: 'card'
+          }}
+        />
         <RootStack.Screen
           name="Record"
           component={RecordScreen}

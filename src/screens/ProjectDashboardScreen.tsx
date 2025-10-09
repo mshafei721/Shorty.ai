@@ -18,7 +18,8 @@ import {
   RefreshControl,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import type { RootStackParamList } from '../navigation/RootNavigator';
 import { StorageBanner } from '../components/StorageBanner';
 import { checkStorageStatus, type StorageStatus } from '../utils/storageGuards';
 
@@ -50,8 +51,12 @@ interface Script {
 
 export default function ProjectDashboardScreen() {
   const navigation = useNavigation();
+  const route = useRoute<RouteProp<RootStackParamList, 'ProjectDashboard'>>();
+  const { projectId } = route.params;
+
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [currentProject, setCurrentProject] = useState<Project | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [videos, setVideos] = useState<VideoAsset[]>([]);
   const [scripts, setScripts] = useState<Script[]>([]);
@@ -59,26 +64,31 @@ export default function ProjectDashboardScreen() {
 
   useEffect(() => {
     loadDashboardData();
-  }, []);
+  }, [projectId]);
 
   const loadDashboardData = async () => {
     try {
       setLoading(true);
 
-      // Load projects
+      // Load all projects to find current project
       const projectsJson = await AsyncStorage.getItem('projects');
       const projectsData = projectsJson ? JSON.parse(projectsJson) : [];
-      setProjects(projectsData.filter((p: Project) => !p.isDeleted));
+      const allProjects = projectsData.filter((p: Project) => !p.isDeleted);
+      setProjects(allProjects);
 
-      // Load videos
+      // Find current project
+      const project = allProjects.find((p: Project) => p.id === projectId);
+      setCurrentProject(project || null);
+
+      // Load videos filtered by projectId
       const videosJson = await AsyncStorage.getItem('videos');
       const videosData = videosJson ? JSON.parse(videosJson) : [];
-      setVideos(videosData);
+      setVideos(videosData.filter((v: VideoAsset) => v.projectId === projectId));
 
-      // Load scripts
+      // Load scripts filtered by projectId
       const scriptsJson = await AsyncStorage.getItem('scripts');
       const scriptsData = scriptsJson ? JSON.parse(scriptsJson) : [];
-      setScripts(scriptsData);
+      setScripts(scriptsData.filter((s: Script) => s.projectId === projectId));
 
       // Check storage
       const storage = await checkStorageStatus();
@@ -161,9 +171,12 @@ export default function ProjectDashboardScreen() {
         }
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Dashboard</Text>
+          <Text style={styles.title}>{currentProject?.name || 'Project Dashboard'}</Text>
           <Text style={styles.subtitle}>
-            {projects.length} {projects.length === 1 ? 'project' : 'projects'}
+            {currentProject?.niche} {currentProject?.subNiche && `→ ${currentProject.subNiche}`}
+          </Text>
+          <Text style={styles.projectMeta}>
+            {videos.length} {videos.length === 1 ? 'video' : 'videos'} · {scripts.length} {scripts.length === 1 ? 'script' : 'scripts'}
           </Text>
         </View>
 
@@ -318,6 +331,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     marginTop: 4,
+  },
+  projectMeta: {
+    fontSize: 14,
+    color: '#999',
+    marginTop: 6,
   },
   section: {
     marginTop: 24,
