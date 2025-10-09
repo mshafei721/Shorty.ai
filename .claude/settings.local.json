@@ -33,7 +33,11 @@
       "Bash(tee:*)",
       "Bash(if exist NUL del NUL)",
       "Bash(del NUL)",
-      "Bash(eas init:*)"
+      "Bash(eas init:*)",
+      "Bash(eas whoami:*)",
+      "Bash(eas build:*)",
+      "Bash(eas:*)",
+      "Bash(npx eas-cli@latest build:*)"
     ],
     "deny": [],
     "ask": []
