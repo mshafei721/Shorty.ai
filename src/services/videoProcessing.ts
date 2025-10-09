@@ -7,28 +7,9 @@
  * @module services/videoProcessing
  */
 
+import type { FeatureSelections, ProcessingJob } from '../storage/schema';
+
 const API_BASE_URL = process.env.EXPO_PUBLIC_M2_BASE_URL || 'http://localhost:3000';
-
-export interface FeatureSelections {
-  videoId: string;
-  subtitles: boolean;
-  backgroundChange: { enabled: boolean; presetId: string | null };
-  backgroundMusic: { enabled: boolean; trackId: string | null; volume: number };
-  introOutro: { enabled: boolean; templateId: string | null };
-  fillerWordRemoval: boolean;
-}
-
-export interface ProcessingJob {
-  id: string;
-  videoId: string;
-  status: 'idle' | 'uploading' | 'queued' | 'processing' | 'complete' | 'failed' | 'cancelled';
-  progress: number;
-  requestedFeatures: FeatureSelections;
-  startedAt: string;
-  completedAt: string | null;
-  error: { code: string; message: string } | null;
-  retries: number;
-}
 
 export interface UploadProgress {
   loaded: number;

@@ -17,8 +17,14 @@ import {
   Alert,
 } from 'react-native';
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import { VideoView, useVideoPlayer } from 'expo-video';
+import * as Sharing from 'expo-sharing';
+import * as MediaLibrary from 'expo-media-library';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { M3Preset } from '../types';
+import type { VideoAsset } from '../../../storage/schema';
+import type { RootStackParamList } from '../../../navigation/RootNavigator';
 import {
   createInitialContext,
   transition,
@@ -37,7 +43,7 @@ type RouteParams = {
 };
 
 export default function PreviewScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RouteParams, 'PreviewScreen'>>();
   const { projectId, assetId, rawVideoUri, preset } = route.params;
 
@@ -133,6 +139,72 @@ export default function PreviewScreen() {
       player.pause();
     } else {
       player.play();
+    }
+  };
+
+  const handleExport = async () => {
+    try {
+      const videoToExport = machine.context.draftArtifactUrl || rawVideoUri;
+
+      const isAvailable = await Sharing.isAvailableAsync();
+      if (isAvailable) {
+        await Sharing.shareAsync(videoToExport, {
+          mimeType: 'video/mp4',
+          dialogTitle: 'Share your video',
+        });
+
+        await updateVideoExportTimestamp();
+
+        Alert.alert(
+          'Success',
+          'Video shared successfully! Returning to dashboard...',
+          [
+            {
+              text: 'OK',
+              onPress: () => navigation.navigate('ProjectDashboard', { projectId }),
+            },
+          ]
+        );
+      } else {
+        const { status } = await MediaLibrary.requestPermissionsAsync();
+        if (status === 'granted') {
+          await MediaLibrary.saveToLibraryAsync(videoToExport);
+          await updateVideoExportTimestamp();
+
+          Alert.alert(
+            'Success',
+            'Video saved to your media library! Returning to dashboard...',
+            [
+              {
+                text: 'OK',
+                onPress: () => navigation.navigate('ProjectDashboard', { projectId }),
+              },
+            ]
+          );
+        } else {
+          Alert.alert('Permission Denied', 'Cannot save video without media library permission.');
+        }
+      }
+    } catch (error) {
+      console.error('Export failed:', error);
+      Alert.alert('Export Failed', 'Failed to export video. Please try again.');
+    }
+  };
+
+  const updateVideoExportTimestamp = async () => {
+    try {
+      const videosJson = await AsyncStorage.getItem('videos');
+      if (videosJson) {
+        const videos: VideoAsset[] = JSON.parse(videosJson);
+        const updatedVideos = videos.map(v =>
+          v.id === assetId
+            ? { ...v, exportedAt: new Date().toISOString() }
+            : v
+        );
+        await AsyncStorage.setItem('videos', JSON.stringify(updatedVideos));
+      }
+    } catch (error) {
+      console.error('Failed to update export timestamp:', error);
     }
   };
 
@@ -257,11 +329,19 @@ export default function PreviewScreen() {
             )}
 
             <TouchableOpacity
+              style={styles.exportButton}
+              onPress={handleExport}
+              testID="export-button"
+            >
+              <Text style={styles.exportButtonText}>Share Video</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
               style={styles.backButton}
               onPress={() => navigation.goBack()}
               testID="back-button"
             >
-              <Text style={styles.backButtonText}>← Back</Text>
+              <Text style={styles.backButtonText}>← Back to Dashboard</Text>
             </TouchableOpacity>
           </View>
         </>
@@ -400,6 +480,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   draftReadyText: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  exportButton: {
+    backgroundColor: '#34C759',
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+  exportButtonText: {
     color: '#FFF',
     fontSize: 18,
     fontWeight: '600',

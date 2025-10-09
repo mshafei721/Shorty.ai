@@ -8,7 +8,7 @@ import type { Project } from '../storage/schema';
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
-export default function ProjectsListScreen() {
+export default function ProjectsDashboardScreen() {
   const navigation = useNavigation<NavigationProp>();
   const [projects, setProjects] = useState<Project[]>([]);
   const [nicheInfo, setNicheInfo] = useState<string>('');

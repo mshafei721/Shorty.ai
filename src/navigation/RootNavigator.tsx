@@ -7,14 +7,19 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import SplashScreen from '../screens/SplashScreen';
 import NicheSelectionScreen from '../screens/NicheSelectionScreen';
-import ProjectsListScreen from '../screens/ProjectsListScreen';
+import ProjectsDashboardScreen from '../screens/ProjectsDashboardScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import RecordScreen from '../screens/RecordScreen';
 import ProjectDashboardScreen from '../screens/ProjectDashboardScreen';
 import CreateProjectScreen from '../screens/CreateProjectScreen';
+import PasteScriptScreen from '../screens/PasteScriptScreen';
+import TeleprompterRehearsalScreen from '../screens/TeleprompterRehearsalScreen';
+import ProcessingScreen from '../screens/ProcessingScreen';
 import ScriptStudioWrapper from '../features/scripting/screens/ScriptStudioWrapper';
 import FeaturesScreen from '../features/m3/screens/FeaturesScreen';
 import PreviewScreen from '../features/m3/screens/PreviewScreen';
+
+import type { FeatureSelections } from '../storage/schema';
 
 export type RootStackParamList = {
   Onboarding: undefined;
@@ -28,9 +33,22 @@ export type RootStackParamList = {
     niche?: string;
     subNiche?: string;
   };
+  PasteScript: {
+    projectId: string;
+  };
+  TeleprompterRehearsal: {
+    scriptId: string;
+    projectId: string;
+  };
   Record: {
     scriptId?: string;
     projectId?: string;
+  };
+  Processing: {
+    projectId: string;
+    videoUri: string;
+    scriptId?: string;
+    features?: FeatureSelections;
   };
   Features: {
     projectId: string;
@@ -51,7 +69,7 @@ export type OnboardingStackParamList = {
 };
 
 export type MainTabsParamList = {
-  ProjectsList: undefined;
+  ProjectsDashboard: undefined;
   Settings: undefined;
 };
 
@@ -73,7 +91,7 @@ const linking = {
       Main: {
         path: 'main',
         screens: {
-          ProjectsList: 'projects',
+          ProjectsDashboard: 'projects',
           Settings: 'settings',
         },
       },
@@ -105,8 +123,8 @@ function MainNavigator() {
       }}
     >
       <MainTabs.Screen
-        name="ProjectsList"
-        component={ProjectsListScreen}
+        name="ProjectsDashboard"
+        component={ProjectsDashboardScreen}
         options={{
           title: 'Projects',
           tabBarIcon: ({ color, size }) => (
@@ -187,12 +205,38 @@ export function RootNavigator() {
           }}
         />
         <RootStack.Screen
+          name="PasteScript"
+          component={PasteScriptScreen}
+          options={{
+            headerShown: false,
+            presentation: 'modal'
+          }}
+        />
+        <RootStack.Screen
+          name="TeleprompterRehearsal"
+          component={TeleprompterRehearsalScreen}
+          options={{
+            headerShown: false,
+            presentation: 'fullScreenModal' as any, // iOS-specific full screen modal
+          }}
+        />
+        <RootStack.Screen
           name="Record"
           component={RecordScreen}
           options={{
             headerShown: true,
             title: 'Record Video',
             presentation: 'modal'
+          }}
+        />
+        <RootStack.Screen
+          name="Processing"
+          component={ProcessingScreen}
+          options={{
+            headerShown: true,
+            title: 'Processing Video',
+            presentation: 'fullScreenModal' as any, // iOS-specific full screen modal
+            gestureEnabled: false,
           }}
         />
         <RootStack.Screen

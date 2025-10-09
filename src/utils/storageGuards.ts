@@ -7,7 +7,8 @@
  * @module utils/storageGuards
  */
 
-import * as FileSystem from 'expo-file-system';
+import { Platform } from 'react-native';
+import { getFreeDiskStorageAsync } from 'expo-file-system/legacy';
 
 export interface StorageStatus {
   totalBytes: number;
@@ -26,23 +27,22 @@ const WARNING_THRESHOLD_MB = 2048;  // 2GB - Show warning
 
 /**
  * Check available storage on device
- * Note: Expo SDK 54 removed getFreeDiskStorageAsync, fallback to mock values for web
+ * Note: Web platform doesn't support storage checks, returns optimistic fallback
  */
 export async function checkStorageStatus(): Promise<StorageStatus> {
   let freeBytes: number;
 
-  try {
-    // For native platforms, use the legacy API if available
-    if (FileSystem.getFreeDiskStorageAsync) {
-      freeBytes = await FileSystem.getFreeDiskStorageAsync();
-    } else {
-      // Fallback for web or when API is unavailable
-      // Return optimistic values (2GB free) to avoid blocking functionality
+  // Web platform fallback - always return optimistic values
+  if (Platform.OS === 'web') {
+    freeBytes = 2 * BYTES_PER_GB;
+  } else {
+    try {
+      // Use legacy API explicitly to avoid deprecation warnings
+      freeBytes = await getFreeDiskStorageAsync();
+    } catch (error) {
+      // Silently fall back to optimistic value on error
       freeBytes = 2 * BYTES_PER_GB;
     }
-  } catch (error) {
-    console.warn('Storage check failed, using fallback:', error);
-    freeBytes = 2 * BYTES_PER_GB;
   }
 
   // Estimate total capacity (actual value not critical for warnings)

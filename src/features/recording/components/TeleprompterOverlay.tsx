@@ -73,10 +73,19 @@ export function TeleprompterOverlay({
   const startScrolling = () => {
     stopScrolling(); // Clear any existing animation
 
+    // Animate the scroll position
     animationRef.current = Animated.timing(scrollPosition, {
       toValue: totalPixels,
       duration: durationMs,
-      useNativeDriver: true,
+      useNativeDriver: false, // Cannot use native driver with ScrollView scrollTo
+    });
+
+    // Listen to animation and update ScrollView
+    scrollPosition.addListener(({ value }) => {
+      scrollViewRef.current?.scrollTo({
+        y: value,
+        animated: false,
+      });
     });
 
     animationRef.current.start();
@@ -87,6 +96,8 @@ export function TeleprompterOverlay({
       animationRef.current.stop();
       animationRef.current = null;
     }
+    // Clean up all listeners
+    scrollPosition.removeAllListeners();
   };
 
   const handleRewind = () => {

@@ -16,8 +16,10 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Network from 'expo-network';
 import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
 import type { RootStackParamList } from '../navigation/RootNavigator';
 import { Ionicons } from '@expo/vector-icons';
@@ -62,10 +64,22 @@ export default function ProjectDashboardScreen() {
   const [videos, setVideos] = useState<VideoAsset[]>([]);
   const [scripts, setScripts] = useState<Script[]>([]);
   const [storageStatus, setStorageStatus] = useState<StorageStatus | null>(null);
+  const [isOffline, setIsOffline] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadDashboardData();
+    checkNetworkStatus();
   }, [projectId]);
+
+  const checkNetworkStatus = async () => {
+    try {
+      const networkState = await Network.getNetworkStateAsync();
+      setIsOffline(!networkState.isConnected);
+    } catch (err) {
+      console.error('Failed to check network status:', err);
+    }
+  };
 
   const loadDashboardData = async () => {
     try {
@@ -94,8 +108,11 @@ export default function ProjectDashboardScreen() {
       // Check storage
       const storage = await checkStorageStatus();
       setStorageStatus(storage);
-    } catch (error) {
-      console.error('Failed to load dashboard data:', error);
+
+      setError(null);
+    } catch (err) {
+      console.error('Failed to load dashboard data:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -104,11 +121,32 @@ export default function ProjectDashboardScreen() {
 
   const handleRefresh = () => {
     setRefreshing(true);
+    checkNetworkStatus();
     loadDashboardData();
   };
 
-  const handleCreateProject = () => {
-    navigation.navigate('CreateProject');
+  const handlePasteScript = () => {
+    navigation.navigate('PasteScript', { projectId });
+  };
+
+  const handleTeleprompterRehearsal = () => {
+    if (scripts.length === 0) {
+      Alert.alert('No Scripts', 'Create a script first before rehearsing.');
+      return;
+    }
+
+    const latestScript = scripts.sort((a, b) =>
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )[0];
+
+    navigation.navigate('TeleprompterRehearsal', {
+      scriptId: latestScript.id,
+      projectId,
+    });
+  };
+
+  const handleBackToProjects = () => {
+    navigation.navigate('Main');
   };
 
   const handleGenerateScript = () => {
@@ -169,6 +207,28 @@ export default function ProjectDashboardScreen() {
     <View style={styles.container}>
       {storageStatus && <StorageBanner status={storageStatus} />}
 
+      {isOffline && (
+        <View style={styles.offlineBanner}>
+          <Ionicons name="cloud-offline-outline" size={20} color="#856404" />
+          <Text style={styles.offlineBannerText}>
+            You're offline. Local videos available. We'll resume uploads when you're back.
+          </Text>
+        </View>
+      )}
+
+      {error && (
+        <View style={styles.errorBanner}>
+          <View style={styles.errorHeader}>
+            <Ionicons name="alert-circle" size={24} color="#FF3B30" />
+            <Text style={styles.errorTitle}>Error Loading Dashboard</Text>
+          </View>
+          <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={loadDashboardData}>
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       <ScrollView
         style={styles.scrollView}
         refreshControl={
@@ -189,9 +249,9 @@ export default function ProjectDashboardScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Quick Actions</Text>
           <View style={styles.actionsGrid}>
-            <TouchableOpacity style={styles.actionCard} onPress={handleCreateProject}>
-              <Ionicons name="add-circle-outline" size={32} color="#007AFF" style={styles.actionIconView} />
-              <Text style={styles.actionLabel}>New Project</Text>
+            <TouchableOpacity style={styles.actionCard} onPress={handleBackToProjects}>
+              <Ionicons name="grid-outline" size={32} color="#007AFF" style={styles.actionIconView} />
+              <Text style={styles.actionLabel}>All Projects</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.actionCard} onPress={handleGenerateScript}>
@@ -199,10 +259,24 @@ export default function ProjectDashboardScreen() {
               <Text style={styles.actionLabel}>Generate Script</Text>
             </TouchableOpacity>
 
+            <TouchableOpacity style={styles.actionCard} onPress={handlePasteScript}>
+              <Ionicons name="clipboard-outline" size={32} color="#007AFF" style={styles.actionIconView} />
+              <Text style={styles.actionLabel}>Paste Script</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={[styles.actionsGrid, { marginTop: 12 }]}>
+            <TouchableOpacity style={styles.actionCard} onPress={handleTeleprompterRehearsal}>
+              <Ionicons name="play-circle-outline" size={32} color="#007AFF" style={styles.actionIconView} />
+              <Text style={styles.actionLabel}>Rehearse</Text>
+            </TouchableOpacity>
+
             <TouchableOpacity style={styles.actionCard} onPress={handleStartRecording}>
               <Ionicons name="videocam-outline" size={32} color="#007AFF" style={styles.actionIconView} />
               <Text style={styles.actionLabel}>Record Video</Text>
             </TouchableOpacity>
+
+            <View style={styles.actionCard} />
           </View>
         </View>
 
@@ -216,22 +290,30 @@ export default function ProjectDashboardScreen() {
               {activeVideos.map(video => {
                 const project = projects.find(p => p.id === video.projectId);
                 return (
-                  <View key={video.id} style={styles.videoCard}>
+                  <TouchableOpacity
+                    key={video.id}
+                    style={styles.videoCard}
+                    onPress={() => {
+                      // Navigate to preview screen
+                      navigation.navigate('Preview', {
+                        projectId: video.projectId,
+                        assetId: video.id,
+                        rawVideoUri: video.localUri,
+                        preset: {},
+                      });
+                    }}
+                  >
                     <View style={styles.videoInfo}>
                       <Text style={styles.videoProject}>{project?.name || 'Unknown'}</Text>
                       <Text style={styles.videoType}>
-                        {video.type === 'raw' ? 'Raw' : 'Processed'}
+                        {video.type === 'raw' ? 'Raw Recording' : 'Processed'}
+                      </Text>
+                      <Text style={styles.videoDate}>
+                        {new Date(video.createdAt).toLocaleDateString()} · {Math.round(video.durationSec)}s
                       </Text>
                     </View>
-                    <View
-                      style={[
-                        styles.statusBadge,
-                        { backgroundColor: getStatusColor(video.status) },
-                      ]}
-                    >
-                      <Text style={styles.statusText}>{video.status}</Text>
-                    </View>
-                  </View>
+                    <Ionicons name="play-circle-outline" size={32} color="#007AFF" />
+                  </TouchableOpacity>
                 );
               })}
             </View>
@@ -248,7 +330,16 @@ export default function ProjectDashboardScreen() {
               {recentScripts.map(script => {
                 const project = projects.find(p => p.id === script.projectId);
                 return (
-                  <View key={script.id} style={styles.scriptCard}>
+                  <TouchableOpacity
+                    key={script.id}
+                    style={styles.scriptCard}
+                    onPress={() => {
+                      navigation.navigate('Record', {
+                        scriptId: script.id,
+                        projectId: script.projectId,
+                      });
+                    }}
+                  >
                     <View style={styles.scriptHeader}>
                       <Text style={styles.scriptProject}>{project?.name || 'Unknown'}</Text>
                       <View style={styles.scriptSourceBadge}>
@@ -266,46 +357,17 @@ export default function ProjectDashboardScreen() {
                     <Text style={styles.scriptPreview} numberOfLines={2}>
                       {script.text}
                     </Text>
-                  </View>
-                );
-              })}
-            </View>
-          )}
-        </View>
-
-        {/* Projects List */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>All Projects</Text>
-          {projects.length === 0 ? (
-            <Text style={styles.emptyText}>No projects yet. Create one to get started!</Text>
-          ) : (
-            <View style={styles.projectList}>
-              {projects.map(project => {
-                const projectVideos = getVideosByProject(project.id);
-                return (
-                  <TouchableOpacity
-                    key={project.id}
-                    style={styles.projectCard}
-                    onPress={() => {
-                      // Navigate to current project dashboard (self-referential)
-                      if (project.id !== projectId) {
-                        navigation.navigate('ProjectDashboard', { projectId: project.id });
-                      }
-                    }}
-                  >
-                    <Text style={styles.projectName}>{project.name}</Text>
-                    <Text style={styles.projectNiche}>
-                      {project.niche} → {project.subNiche}
-                    </Text>
-                    <Text style={styles.projectVideos}>
-                      {projectVideos.length} {projectVideos.length === 1 ? 'video' : 'videos'}
-                    </Text>
+                    <View style={styles.scriptActions}>
+                      <Ionicons name="videocam-outline" size={16} color="#007AFF" />
+                      <Text style={styles.scriptActionText}>Tap to record</Text>
+                    </View>
                   </TouchableOpacity>
                 );
               })}
             </View>
           )}
         </View>
+
       </ScrollView>
     </View>
   );
@@ -421,6 +483,11 @@ const styles = StyleSheet.create({
   videoType: {
     fontSize: 14,
     color: '#666',
+    marginBottom: 4,
+  },
+  videoDate: {
+    fontSize: 12,
+    color: '#999',
   },
   statusBadge: {
     paddingHorizontal: 12,
@@ -470,6 +537,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     lineHeight: 20,
+    marginBottom: 12,
+  },
+  scriptActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+  },
+  scriptActionText: {
+    fontSize: 13,
+    color: '#007AFF',
+    fontWeight: '500',
   },
   projectList: {
     gap: 12,
@@ -499,5 +580,56 @@ const styles = StyleSheet.create({
   projectVideos: {
     fontSize: 12,
     color: '#999',
+  },
+  offlineBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: '#FFF3CD',
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#FFE5A1',
+  },
+  offlineBannerText: {
+    flex: 1,
+    fontSize: 14,
+    color: '#856404',
+    fontWeight: '500',
+  },
+  errorBanner: {
+    backgroundColor: '#FFEBEE',
+    padding: 16,
+    margin: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#FF3B30',
+  },
+  errorHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  errorTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FF3B30',
+  },
+  errorText: {
+    fontSize: 14,
+    color: '#C62828',
+    marginBottom: 12,
+  },
+  retryButton: {
+    backgroundColor: '#FF3B30',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    alignSelf: 'flex-start',
+  },
+  retryButtonText: {
+    color: '#FFF',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

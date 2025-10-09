@@ -1,13 +1,13 @@
 /**
- * Unit Tests: ProjectsListScreen
+ * Unit Tests: ProjectsDashboardScreen
  *
- * Tests for the Projects List screen navigation and interactions.
+ * Tests for the Projects Dashboard screen navigation and interactions.
  */
 
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ProjectsListScreen from '../ProjectsListScreen';
+import ProjectsDashboardScreen from '../ProjectsDashboardScreen';
 import type { Project } from '../../storage/schema';
 
 // Mock dependencies
@@ -22,7 +22,7 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   setItem: jest.fn(),
 }));
 
-describe('ProjectsListScreen', () => {
+describe('ProjectsDashboardScreen', () => {
   const mockProjects: Project[] = [
     {
       id: 'project_1',
@@ -57,7 +57,7 @@ describe('ProjectsListScreen', () => {
         return Promise.resolve(null);
       });
 
-      const { getByText } = render(<ProjectsListScreen />);
+      const { getByText } = render(<ProjectsDashboardScreen />);
 
       await waitFor(() => {
         expect(getByText('Test Project 1')).toBeTruthy();
@@ -86,7 +86,7 @@ describe('ProjectsListScreen', () => {
         return Promise.resolve(null);
       });
 
-      const { queryByText } = render(<ProjectsListScreen />);
+      const { queryByText } = render(<ProjectsDashboardScreen />);
 
       await waitFor(() => {
         expect(queryByText('Deleted Project')).toBeNull();
@@ -96,7 +96,7 @@ describe('ProjectsListScreen', () => {
     it('should show empty state when no projects exist', async () => {
       (AsyncStorage.getItem as jest.Mock).mockResolvedValue(null);
 
-      const { getByText } = render(<ProjectsListScreen />);
+      const { getByText } = render(<ProjectsDashboardScreen />);
 
       await waitFor(() => {
         expect(getByText(/no projects yet/i)).toBeTruthy();
@@ -118,7 +118,7 @@ describe('ProjectsListScreen', () => {
         return Promise.resolve(null);
       });
 
-      const { getByText } = render(<ProjectsListScreen />);
+      const { getByText } = render(<ProjectsDashboardScreen />);
 
       await waitFor(() => {
         expect(getByText('Test Project 1')).toBeTruthy();
@@ -145,7 +145,7 @@ describe('ProjectsListScreen', () => {
         return Promise.resolve(null);
       });
 
-      const { getByText } = render(<ProjectsListScreen />);
+      const { getByText } = render(<ProjectsDashboardScreen />);
 
       await waitFor(() => {
         expect(getByText('Test Project 2')).toBeTruthy();
@@ -169,7 +169,7 @@ describe('ProjectsListScreen', () => {
         return Promise.resolve(null);
       });
 
-      const { getAllByTestId } = render(<ProjectsListScreen />);
+      const { getAllByTestId } = render(<ProjectsDashboardScreen />);
 
       await waitFor(() => {
         const projectCards = getAllByTestId('project-card');
@@ -185,7 +185,7 @@ describe('ProjectsListScreen', () => {
         return Promise.resolve(null);
       });
 
-      const { getAllByTestId } = render(<ProjectsListScreen />);
+      const { getAllByTestId } = render(<ProjectsDashboardScreen />);
 
       await waitFor(() => {
         const projectCards = getAllByTestId('project-card');
@@ -200,7 +200,7 @@ describe('ProjectsListScreen', () => {
       (AsyncStorage.getItem as jest.Mock).mockRejectedValue(new Error('Storage error'));
       const consoleError = jest.spyOn(console, 'error').mockImplementation();
 
-      const { getByText } = render(<ProjectsListScreen />);
+      const { getByText } = render(<ProjectsDashboardScreen />);
 
       await waitFor(() => {
         expect(getByText(/no projects yet/i)).toBeTruthy();
