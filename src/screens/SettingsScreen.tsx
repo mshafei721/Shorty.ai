@@ -9,6 +9,7 @@ export default function SettingsScreen() {
   const navigation = useNavigation();
   const [nicheInfo, setNicheInfo] = useState<string>('');
   const [telemetryEnabled, setTelemetryEnabled] = useState(false);
+  const [processingMode, setProcessingMode] = useState<'cloud' | 'device' | 'hybrid'>('hybrid');
   const [totalVideos, setTotalVideos] = useState(0);
   const [storageUsedMB, setStorageUsedMB] = useState(0);
   const [freeSpaceMB, setFreeSpaceMB] = useState(0);
@@ -28,6 +29,9 @@ export default function SettingsScreen() {
 
       const telemetryPref = await AsyncStorage.getItem('telemetryEnabled');
       setTelemetryEnabled(telemetryPref === 'true');
+
+      const processingModePref = await AsyncStorage.getItem('processingMode');
+      setProcessingMode((processingModePref as 'cloud' | 'device' | 'hybrid') || 'hybrid');
     } catch (error) {
       console.error('Failed to load user info:', error);
     }
@@ -59,6 +63,15 @@ export default function SettingsScreen() {
       setTelemetryEnabled(value);
     } catch (error) {
       console.error('Failed to update telemetry setting:', error);
+    }
+  };
+
+  const handleProcessingModeChange = async (mode: 'cloud' | 'device' | 'hybrid') => {
+    try {
+      await AsyncStorage.setItem('processingMode', mode);
+      setProcessingMode(mode);
+    } catch (error) {
+      console.error('Failed to update processing mode:', error);
     }
   };
 
@@ -137,6 +150,77 @@ export default function SettingsScreen() {
           </View>
           <Switch value={telemetryEnabled} onValueChange={handleTelemetryToggle} />
         </View>
+      </View>
+
+      {/* Video Processing Mode */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Video Processing Mode</Text>
+        <Text style={styles.sectionDescription}>
+          Choose how videos are processed after recording
+        </Text>
+
+        <TouchableOpacity
+          style={[
+            styles.optionCard,
+            processingMode === 'device' && styles.optionCardSelected,
+          ]}
+          onPress={() => handleProcessingModeChange('device')}
+        >
+          <View style={styles.optionHeader}>
+            <Text style={styles.optionTitle}>Device (On-Device)</Text>
+            {processingMode === 'device' && <Text style={styles.checkmark}>✓</Text>}
+          </View>
+          <Text style={styles.optionDescription}>
+            Process videos directly on your device using FFmpegKit. Private, works offline, but slower processing (~2-4x recording time).
+          </Text>
+          <View style={styles.optionFeatures}>
+            <Text style={styles.featureTag}>🔒 Private</Text>
+            <Text style={styles.featureTag}>📴 Offline</Text>
+            <Text style={styles.featureTag}>🐢 Slower</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.optionCard,
+            processingMode === 'cloud' && styles.optionCardSelected,
+          ]}
+          onPress={() => handleProcessingModeChange('cloud')}
+        >
+          <View style={styles.optionHeader}>
+            <Text style={styles.optionTitle}>Cloud (Server)</Text>
+            {processingMode === 'cloud' && <Text style={styles.checkmark}>✓</Text>}
+          </View>
+          <Text style={styles.optionDescription}>
+            Upload videos to cloud servers for processing. Fast, but requires internet connection and uses data.
+          </Text>
+          <View style={styles.optionFeatures}>
+            <Text style={styles.featureTag}>⚡ Fast</Text>
+            <Text style={styles.featureTag}>📡 Online only</Text>
+            <Text style={styles.featureTag}>💰 May incur costs</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.optionCard,
+            processingMode === 'hybrid' && styles.optionCardSelected,
+          ]}
+          onPress={() => handleProcessingModeChange('hybrid')}
+        >
+          <View style={styles.optionHeader}>
+            <Text style={styles.optionTitle}>Hybrid (Recommended)</Text>
+            {processingMode === 'hybrid' && <Text style={styles.checkmark}>✓</Text>}
+          </View>
+          <Text style={styles.optionDescription}>
+            Use cloud when online for speed, fall back to on-device processing when offline. Best of both worlds.
+          </Text>
+          <View style={styles.optionFeatures}>
+            <Text style={styles.featureTag}>⚡ Fast online</Text>
+            <Text style={styles.featureTag}>📴 Works offline</Text>
+            <Text style={styles.featureTag}>🎯 Balanced</Text>
+          </View>
+        </TouchableOpacity>
       </View>
 
       {/* Storage Information */}
@@ -313,5 +397,59 @@ const styles = StyleSheet.create({
   chevron: {
     fontSize: 24,
     color: '#C7C7CC',
+  },
+  sectionDescription: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 16,
+    lineHeight: 20,
+  },
+  optionCard: {
+    backgroundColor: '#F9F9F9',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 2,
+    borderColor: '#E0E0E0',
+  },
+  optionCardSelected: {
+    backgroundColor: '#EBF5FF',
+    borderColor: '#007AFF',
+  },
+  optionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  optionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#000',
+  },
+  checkmark: {
+    fontSize: 20,
+    color: '#007AFF',
+    fontWeight: 'bold',
+  },
+  optionDescription: {
+    fontSize: 14,
+    color: '#666',
+    lineHeight: 20,
+    marginBottom: 12,
+  },
+  optionFeatures: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  featureTag: {
+    fontSize: 12,
+    color: '#666',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    overflow: 'hidden',
   },
 });

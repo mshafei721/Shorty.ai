@@ -18,9 +18,31 @@
       }
     },
     "scheme": "shortyai",
-    "plugins": [],
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Shorty.ai to access your camera to record videos.",
+          "microphonePermission": "Allow Shorty.ai to access your microphone to record audio.",
+          "recordAudioAndroid": true
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow Shorty.ai to access your photos to save and share videos.",
+          "savePhotosPermission": "Allow Shorty.ai to save videos to your photo library.",
+          "isAccessMediaLocationEnabled": true
+        }
+      ]
+    ],
     "runtimeVersion": {
       "policy": "appVersion"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "shorty-ai-001"
+      }
     }
   }
 }

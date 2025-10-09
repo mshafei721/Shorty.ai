@@ -1,242 +1,346 @@
 /**
- * Video Processing Service
+ * Video Processing Service (On-Device)
  *
- * Handles video upload, processing job creation, polling, and download
- * Integrates with backend API for automated video editing features.
+ * Uses FFmpegKit to perform video operations on-device:
+ * - Subtitle burning
+ * - Video trimming/cutting
+ * - Basic video operations
  *
  * @module services/videoProcessing
  */
 
-import type { FeatureSelections, ProcessingJob } from '../storage/schema';
+import { FFmpegKit, FFmpegKitConfig, ReturnCode, Statistics } from 'ffmpeg-kit-react-native';
+import * as FileSystem from 'expo-file-system';
+import { Platform } from 'react-native';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_M2_BASE_URL || 'http://localhost:3000';
+export interface SubtitleEntry {
+  index: number;
+  startTime: number;
+  endTime: number;
+  text: string;
+}
 
-export interface UploadProgress {
-  loaded: number;
-  total: number;
+export interface ProcessingProgress {
   percentage: number;
+  time: number;
+  bitrate: number;
+  speed: number;
 }
 
-/**
- * Upload video file to backend
- */
-export async function uploadVideo(
-  videoUri: string,
-  projectId: string,
-  onProgress?: (progress: UploadProgress) => void
-): Promise<{ uploadId: string; url: string }> {
-  try {
-    const formData = new FormData();
-    formData.append('video', {
-      uri: videoUri,
-      type: 'video/mp4',
-      name: `video_${projectId}_${Date.now()}.mp4`,
-    } as any);
-    formData.append('projectId', projectId);
+export interface ProcessingOptions {
+  onProgress?: (progress: ProcessingProgress) => void;
+  onComplete?: (outputPath: string) => void;
+  onError?: (error: Error) => void;
+}
 
-    const response = await fetch(`${API_BASE_URL}/uploads`, {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+export interface VideoInfo {
+  duration: number;
+  width: number;
+  height: number;
+  codec: string;
+  bitrate: number;
+}
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Upload failed: ${response.status} ${errorText}`);
+export class VideoProcessingService {
+  private static instance: VideoProcessingService;
+  private processingDir: string;
+
+  private constructor() {
+    this.processingDir = `${FileSystem.documentDirectory}processing/`;
+    this.ensureProcessingDirectory();
+  }
+
+  static getInstance(): VideoProcessingService {
+    if (!VideoProcessingService.instance) {
+      VideoProcessingService.instance = new VideoProcessingService();
     }
-
-    const data = await response.json();
-    return {
-      uploadId: data.uploadId || data.id,
-      url: data.url || data.videoUrl,
-    };
-  } catch (error) {
-    console.error('Video upload error:', error);
-    throw error;
+    return VideoProcessingService.instance;
   }
-}
 
-/**
- * Create processing job with feature selections
- */
-export async function createProcessingJob(
-  videoId: string,
-  features: FeatureSelections
-): Promise<ProcessingJob> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/jobs`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        videoId,
-        features,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Job creation failed: ${response.status} ${errorText}`);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Job creation error:', error);
-    throw error;
-  }
-}
-
-/**
- * Poll job status with exponential backoff
- */
-export async function pollJobStatus(
-  jobId: string,
-  onUpdate: (job: ProcessingJob) => void,
-  options?: {
-    interval?: number;
-    maxAttempts?: number;
-    maxDuration?: number;
-  }
-): Promise<ProcessingJob> {
-  const interval = options?.interval || 2000; // 2 seconds
-  const maxAttempts = options?.maxAttempts || 600; // 20 minutes at 2s intervals
-  const maxDuration = options?.maxDuration || 1200000; // 20 minutes
-
-  let attempts = 0;
-  const startTime = Date.now();
-
-  return new Promise((resolve, reject) => {
-    const poll = async () => {
-      try {
-        attempts++;
-
-        // Check timeout
-        if (Date.now() - startTime > maxDuration) {
-          reject(new Error('Polling timeout: Maximum duration exceeded'));
-          return;
-        }
-
-        if (attempts > maxAttempts) {
-          reject(new Error('Polling timeout: Maximum attempts exceeded'));
-          return;
-        }
-
-        // Fetch job status
-        const response = await fetch(`${API_BASE_URL}/jobs/${jobId}`);
-
-        if (!response.ok) {
-          throw new Error(`Status check failed: ${response.status}`);
-        }
-
-        const job: ProcessingJob = await response.json();
-        onUpdate(job);
-
-        // Check terminal states
-        if (job.status === 'complete') {
-          resolve(job);
-          return;
-        }
-
-        if (job.status === 'failed') {
-          reject(new Error(job.error?.message || 'Processing failed'));
-          return;
-        }
-
-        if (job.status === 'cancelled') {
-          reject(new Error('Job was cancelled'));
-          return;
-        }
-
-        // Continue polling
-        setTimeout(poll, interval);
-      } catch (error) {
-        // Retry on network errors with exponential backoff
-        if (attempts < 3) {
-          const backoffDelay = interval * Math.pow(2, attempts - 1);
-          console.warn(`Poll error, retrying in ${backoffDelay}ms:`, error);
-          setTimeout(poll, backoffDelay);
-        } else {
-          reject(error);
-        }
-      }
-    };
-
-    poll();
-  });
-}
-
-/**
- * Download processed video
- */
-export async function downloadProcessedVideo(
-  jobId: string,
-  onProgress?: (progress: UploadProgress) => void
-): Promise<string> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/downloads/${jobId}`);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Download failed: ${response.status} ${errorText}`);
-    }
-
-    const data = await response.json();
-    return data.url || data.downloadUrl;
-  } catch (error) {
-    console.error('Video download error:', error);
-    throw error;
-  }
-}
-
-/**
- * Cancel processing job
- */
-export async function cancelProcessingJob(jobId: string): Promise<void> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/jobs/${jobId}/cancel`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Cancel failed: ${response.status} ${errorText}`);
-    }
-  } catch (error) {
-    console.error('Job cancellation error:', error);
-    throw error;
-  }
-}
-
-/**
- * Exponential backoff retry wrapper
- */
-export async function retryWithBackoff<T>(
-  fn: () => Promise<T>,
-  maxRetries = 3,
-  baseDelay = 2000
-): Promise<T> {
-  let lastError: Error | null = null;
-
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+  private async ensureProcessingDirectory(): Promise<void> {
     try {
-      return await fn();
-    } catch (error) {
-      lastError = error as Error;
-
-      if (attempt < maxRetries) {
-        const delay = baseDelay * Math.pow(2, attempt);
-        console.warn(`Retry attempt ${attempt + 1}/${maxRetries} after ${delay}ms`);
-        await new Promise(resolve => setTimeout(resolve, delay));
+      const dirInfo = await FileSystem.getInfoAsync(this.processingDir);
+      if (!dirInfo.exists) {
+        await FileSystem.makeDirectoryAsync(this.processingDir, { intermediates: true });
       }
+    } catch (error) {
+      console.error('Failed to create processing directory:', error);
     }
   }
 
-  throw lastError || new Error('Retry failed');
+  /**
+   * Get video information using FFprobe
+   */
+  async getVideoInfo(videoUri: string): Promise<VideoInfo> {
+    const command = `-i "${videoUri}" -v quiet -print_format json -show_format -show_streams`;
+
+    try {
+      const session = await FFmpegKit.execute(command);
+      const returnCode = await session.getReturnCode();
+      const output = await session.getOutput();
+
+      if (ReturnCode.isSuccess(returnCode) && output) {
+        const info = JSON.parse(output);
+        const videoStream = info.streams?.find((s: any) => s.codec_type === 'video');
+
+        return {
+          duration: parseFloat(info.format?.duration || '0'),
+          width: videoStream?.width || 0,
+          height: videoStream?.height || 0,
+          codec: videoStream?.codec_name || 'unknown',
+          bitrate: parseInt(info.format?.bit_rate || '0', 10),
+        };
+      }
+
+      throw new Error('Failed to get video info');
+    } catch (error) {
+      throw new Error(`Video info extraction failed: ${error}`);
+    }
+  }
+
+  /**
+   * Generate SRT subtitle file from subtitle entries
+   */
+  private generateSRTContent(subtitles: SubtitleEntry[]): string {
+    return subtitles
+      .map((sub) => {
+        const startTime = this.formatSRTTime(sub.startTime);
+        const endTime = this.formatSRTTime(sub.endTime);
+        return `${sub.index}\n${startTime} --> ${endTime}\n${sub.text}\n`;
+      })
+      .join('\n');
+  }
+
+  /**
+   * Format time in SRT format (HH:MM:SS,mmm)
+   */
+  private formatSRTTime(seconds: number): string {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = Math.floor(seconds % 60);
+    const ms = Math.floor((seconds % 1) * 1000);
+
+    return `${hours.toString().padStart(2, '0')}:${minutes
+      .toString()
+      .padStart(2, '0')}:${secs.toString().padStart(2, '0')},${ms.toString().padStart(3, '0')}`;
+  }
+
+  /**
+   * Burn subtitles into video
+   */
+  async burnSubtitles(
+    videoUri: string,
+    subtitles: SubtitleEntry[],
+    options: ProcessingOptions = {}
+  ): Promise<string> {
+    try {
+      await this.ensureProcessingDirectory();
+
+      const timestamp = Date.now();
+      const srtPath = `${this.processingDir}subtitles_${timestamp}.srt`;
+      const outputPath = `${this.processingDir}output_${timestamp}.mp4`;
+
+      const srtContent = this.generateSRTContent(subtitles);
+      await FileSystem.writeAsStringAsync(srtPath, srtContent);
+
+      const command = `-i "${videoUri}" -vf "subtitles=${srtPath}:force_style='FontName=Arial,FontSize=24,PrimaryColour=&HFFFFFF,OutlineColour=&H000000,BorderStyle=3,Outline=2,Shadow=1,Alignment=2,MarginV=20'" -c:v libx264 -preset medium -crf 23 -c:a copy "${outputPath}"`;
+
+      console.log('FFmpeg subtitle burn command:', command);
+
+      let videoDuration = 0;
+      try {
+        const info = await this.getVideoInfo(videoUri);
+        videoDuration = info.duration;
+      } catch (error) {
+        console.warn('Could not get video duration for progress tracking');
+      }
+
+      FFmpegKitConfig.enableStatisticsCallback((statistics: Statistics) => {
+        if (options.onProgress && videoDuration > 0) {
+          const time = statistics.getTime() / 1000;
+          const percentage = Math.min((time / videoDuration) * 100, 100);
+
+          options.onProgress({
+            percentage: Math.round(percentage),
+            time,
+            bitrate: statistics.getBitrate(),
+            speed: statistics.getSpeed(),
+          });
+        }
+      });
+
+      const session = await FFmpegKit.execute(command);
+      const returnCode = await session.getReturnCode();
+
+      await FileSystem.deleteAsync(srtPath, { idempotent: true });
+
+      if (ReturnCode.isSuccess(returnCode)) {
+        options.onComplete?.(outputPath);
+        return outputPath;
+      } else {
+        const failStackTrace = await session.getFailStackTrace();
+        throw new Error(`Subtitle burning failed: ${failStackTrace}`);
+      }
+    } catch (error) {
+      options.onError?.(error as Error);
+      throw error;
+    } finally {
+      FFmpegKitConfig.enableStatisticsCallback(() => {});
+    }
+  }
+
+  /**
+   * Trim video to specific time range
+   */
+  async trimVideo(
+    videoUri: string,
+    startTime: number,
+    endTime: number,
+    options: ProcessingOptions = {}
+  ): Promise<string> {
+    try {
+      await this.ensureProcessingDirectory();
+
+      const timestamp = Date.now();
+      const outputPath = `${this.processingDir}trimmed_${timestamp}.mp4`;
+
+      const duration = endTime - startTime;
+      const command = `-i "${videoUri}" -ss ${startTime} -t ${duration} -c copy "${outputPath}"`;
+
+      console.log('FFmpeg trim command:', command);
+
+      const session = await FFmpegKit.execute(command);
+      const returnCode = await session.getReturnCode();
+
+      if (ReturnCode.isSuccess(returnCode)) {
+        options.onComplete?.(outputPath);
+        return outputPath;
+      } else {
+        const failStackTrace = await session.getFailStackTrace();
+        throw new Error(`Video trimming failed: ${failStackTrace}`);
+      }
+    } catch (error) {
+      options.onError?.(error as Error);
+      throw error;
+    }
+  }
+
+  /**
+   * Concatenate multiple video segments (useful for filler word removal)
+   */
+  async concatenateVideos(
+    videoSegments: string[],
+    options: ProcessingOptions = {}
+  ): Promise<string> {
+    try {
+      await this.ensureProcessingDirectory();
+
+      const timestamp = Date.now();
+      const listPath = `${this.processingDir}concat_${timestamp}.txt`;
+      const outputPath = `${this.processingDir}concatenated_${timestamp}.mp4`;
+
+      const listContent = videoSegments.map((seg) => `file '${seg}'`).join('\n');
+      await FileSystem.writeAsStringAsync(listPath, listContent);
+
+      const command = `-f concat -safe 0 -i "${listPath}" -c copy "${outputPath}"`;
+
+      console.log('FFmpeg concatenate command:', command);
+
+      const session = await FFmpegKit.execute(command);
+      const returnCode = await session.getReturnCode();
+
+      await FileSystem.deleteAsync(listPath, { idempotent: true });
+
+      if (ReturnCode.isSuccess(returnCode)) {
+        options.onComplete?.(outputPath);
+        return outputPath;
+      } else {
+        const failStackTrace = await session.getFailStackTrace();
+        throw new Error(`Video concatenation failed: ${failStackTrace}`);
+      }
+    } catch (error) {
+      options.onError?.(error as Error);
+      throw error;
+    }
+  }
+
+  /**
+   * Remove filler words from video by cutting out segments
+   */
+  async removeFillerWords(
+    videoUri: string,
+    fillerSegments: Array<{ start: number; end: number }>,
+    options: ProcessingOptions = {}
+  ): Promise<string> {
+    try {
+      const videoInfo = await this.getVideoInfo(videoUri);
+      const duration = videoInfo.duration;
+
+      const keepSegments: Array<{ start: number; end: number }> = [];
+      let currentTime = 0;
+
+      for (const filler of fillerSegments.sort((a, b) => a.start - b.start)) {
+        if (currentTime < filler.start) {
+          keepSegments.push({ start: currentTime, end: filler.start });
+        }
+        currentTime = filler.end;
+      }
+
+      if (currentTime < duration) {
+        keepSegments.push({ start: currentTime, end: duration });
+      }
+
+      if (keepSegments.length === 1 && keepSegments[0].start === 0 && keepSegments[0].end === duration) {
+        return videoUri;
+      }
+
+      const segmentPaths: string[] = [];
+      for (let i = 0; i < keepSegments.length; i++) {
+        const segment = keepSegments[i];
+        const segmentPath = await this.trimVideo(videoUri, segment.start, segment.end);
+        segmentPaths.push(segmentPath);
+      }
+
+      const finalPath = await this.concatenateVideos(segmentPaths, options);
+
+      for (const segmentPath of segmentPaths) {
+        await FileSystem.deleteAsync(segmentPath, { idempotent: true });
+      }
+
+      return finalPath;
+    } catch (error) {
+      options.onError?.(error as Error);
+      throw error;
+    }
+  }
+
+  /**
+   * Clean up processing directory
+   */
+  async cleanupProcessingFiles(): Promise<void> {
+    try {
+      const dirInfo = await FileSystem.getInfoAsync(this.processingDir);
+      if (dirInfo.exists && dirInfo.isDirectory) {
+        const files = await FileSystem.readDirectoryAsync(this.processingDir);
+        for (const file of files) {
+          await FileSystem.deleteAsync(`${this.processingDir}${file}`, { idempotent: true });
+        }
+      }
+    } catch (error) {
+      console.error('Failed to cleanup processing files:', error);
+    }
+  }
+
+  /**
+   * Cancel ongoing FFmpeg session
+   */
+  async cancelProcessing(): Promise<void> {
+    try {
+      await FFmpegKit.cancel();
+    } catch (error) {
+      console.error('Failed to cancel FFmpeg session:', error);
+    }
+  }
 }
+
+export const videoProcessingService = VideoProcessingService.getInstance();
