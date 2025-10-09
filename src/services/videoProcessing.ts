@@ -41,6 +41,21 @@ export interface VideoInfo {
   bitrate: number;
 }
 
+export interface BackgroundMusicOptions {
+  trackPath: string;
+  volume: number;
+  fadeIn?: boolean;
+  fadeOut?: boolean;
+}
+
+export interface IntroOutroTemplate {
+  id: string;
+  name: string;
+  videoPath: string;
+  duration: number;
+  type: 'intro' | 'outro';
+}
+
 export class VideoProcessingService {
   private static instance: VideoProcessingService;
   private processingDir: string;
@@ -328,6 +343,112 @@ export class VideoProcessingService {
       }
     } catch (error) {
       console.error('Failed to cleanup processing files:', error);
+    }
+  }
+
+  /**
+   * Add background music to video
+   */
+  async addBackgroundMusic(
+    videoUri: string,
+    musicOptions: BackgroundMusicOptions,
+    options: ProcessingOptions = {}
+  ): Promise<string> {
+    try {
+      await this.ensureProcessingDirectory();
+
+      const timestamp = Date.now();
+      const outputPath = `${this.processingDir}music_${timestamp}.mp4`;
+
+      const videoInfo = await this.getVideoInfo(videoUri);
+      const videoDuration = videoInfo.duration;
+
+      let filterComplex = '[1:a]';
+
+      if (musicOptions.fadeIn) {
+        filterComplex += `afade=t=in:st=0:d=2,`;
+      }
+      if (musicOptions.fadeOut) {
+        filterComplex += `afade=t=out:st=${videoDuration - 2}:d=2,`;
+      }
+
+      filterComplex += `volume=${musicOptions.volume}[music];`;
+      filterComplex += `[0:a][music]amix=inputs=2:duration=shortest[aout]`;
+
+      const command = `-i "${videoUri}" -stream_loop -1 -i "${musicOptions.trackPath}" -filter_complex "${filterComplex}" -map 0:v -map "[aout]" -c:v copy -c:a aac -shortest "${outputPath}"`;
+
+      console.log('Adding background music...');
+
+      const session = await FFmpegKit.execute(command);
+      const returnCode = await session.getReturnCode();
+
+      if (ReturnCode.isSuccess(returnCode)) {
+        options.onComplete?.(outputPath);
+        return outputPath;
+      } else {
+        const failStackTrace = await session.getFailStackTrace();
+        throw new Error(`Background music failed: ${failStackTrace}`);
+      }
+    } catch (error) {
+      options.onError?.(error as Error);
+      throw error;
+    }
+  }
+
+  /**
+   * Add intro and/or outro to video
+   */
+  async addIntroOutro(
+    videoUri: string,
+    intro?: IntroOutroTemplate,
+    outro?: IntroOutroTemplate,
+    options: ProcessingOptions = {}
+  ): Promise<string> {
+    try {
+      await this.ensureProcessingDirectory();
+
+      const timestamp = Date.now();
+      const outputPath = `${this.processingDir}intro_outro_${timestamp}.mp4`;
+
+      const segmentPaths: string[] = [];
+
+      if (intro) {
+        segmentPaths.push(intro.videoPath);
+      }
+
+      segmentPaths.push(videoUri);
+
+      if (outro) {
+        segmentPaths.push(outro.videoPath);
+      }
+
+      if (segmentPaths.length === 1) {
+        return videoUri;
+      }
+
+      const listPath = `${this.processingDir}concat_intro_outro_${timestamp}.txt`;
+      const listContent = segmentPaths.map((seg) => `file '${seg}'`).join('\n');
+      await FileSystem.writeAsStringAsync(listPath, listContent);
+
+      const command = `-f concat -safe 0 -i "${listPath}" -c copy "${outputPath}"`;
+
+      console.log('Adding intro/outro...');
+
+      const session = await FFmpegKit.execute(command);
+      const returnCode = await session.getReturnCode();
+
+      await FileSystem.deleteAsync(listPath, { idempotent: true });
+
+      if (ReturnCode.isSuccess(returnCode)) {
+        options.onComplete?.(outputPath);
+        return outputPath;
+      } else {
+        const failStackTrace = await session.getFailStackTrace();
+        throw new Error(`Intro/outro failed: ${failStackTrace}`);
+      }
+    } catch (error) {
+      options.onError?.(error as Error);
+      throw error;
     }
   }
 
