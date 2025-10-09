@@ -23,7 +23,26 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     '@typescript-eslint/no-explicit-any': 'warn',
     '@typescript-eslint/no-var-requires': 'off',
+    'no-restricted-imports': [
+      'error',
+      {
+        patterns: [
+          {
+            group: ['**/__mocks__/*', '**/mocks/*', '**/stubs/*', '**/placeholders/*'],
+            message: 'Mock imports are not allowed in production code. Use setM2Gateway() in tests to inject test doubles.',
+          },
+        ],
+      },
+    ],
   },
+  overrides: [
+    {
+      files: ['**/__tests__/**', '**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', '**/*.spec.tsx'],
+      rules: {
+        'no-restricted-imports': 'off',
+      },
+    },
+  ],
   ignorePatterns: [
     'node_modules/',
     '.expo/',

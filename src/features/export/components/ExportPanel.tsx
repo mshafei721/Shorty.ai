@@ -65,13 +65,14 @@ export function ExportPanel({ projectId, assetId, projectName, onClose }: Export
       if (result.success) {
         await trackExportSuccess(projectId, type);
 
-        const actionMessages = {
+        const actionMessages: Record<string, string> = {
           shared: 'Video shared successfully!',
           saved: 'Video saved to Photos!',
           copied: 'Link copied to clipboard!',
+          cancelled: 'Share cancelled',
         };
 
-        Alert.alert('Success', actionMessages[result.action!]);
+        Alert.alert('Success', actionMessages[result.action!] || 'Export completed');
 
         if (onClose) onClose();
       } else if (result.error) {

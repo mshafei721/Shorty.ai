@@ -19,7 +19,20 @@
       "Bash(git push:*)",
       "Bash(npx tsc:*)",
       "Bash(git checkout:*)",
-      "Bash(git cherry-pick:*)"
+      "Bash(git cherry-pick:*)",
+      "Bash(PORT=8082 npx expo start --web --port 8082)",
+      "Bash(dir:*)",
+      "Bash(timeout:*)",
+      "Bash(tasklist)",
+      "Bash(cmd //c:*)",
+      "Bash(curl http://localhost:19006)",
+      "Bash(curl:*)",
+      "Bash(set CI=1)",
+      "Bash(set EXPO_WEB_PORT=4000)",
+      "Bash(npx expo export:*)",
+      "Bash(tee:*)",
+      "Bash(if exist NUL del NUL)",
+      "Bash(del NUL)"
     ],
     "deny": [],
     "ask": []

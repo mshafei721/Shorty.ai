@@ -14,7 +14,7 @@ import type {
   FillerSpan,
   DraftRenderRequest,
   DraftRenderStatus,
-} from '../types';
+} from '../../types';
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 

@@ -2,7 +2,7 @@
  * Mock M2 Gateway Tests
  */
 
-import { MockM2Gateway } from '../gateway/MockM2Gateway';
+import { MockM2Gateway } from '../gateway/__mocks__/MockM2Gateway';
 
 describe('MockM2Gateway', () => {
   let gateway: MockM2Gateway;
@@ -34,9 +34,12 @@ describe('MockM2Gateway', () => {
     it('includes confidence scores for tokens', async () => {
       const transcript = await gateway.getTranscript('proj_1', 'asset_1');
 
-      transcript.tokens.forEach(token => {
-        expect(token.confidence).toBeGreaterThanOrEqual(0);
-        expect(token.confidence).toBeLessThanOrEqual(1);
+      transcript.tokens.forEach((token) => {
+        expect(token.confidence).toBeDefined();
+        if (token.confidence !== undefined) {
+          expect(token.confidence).toBeGreaterThanOrEqual(0);
+          expect(token.confidence).toBeLessThanOrEqual(1);
+        }
       });
     });
   });

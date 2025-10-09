@@ -49,6 +49,39 @@ export interface UserProfile {
   createdAt: string;
 }
 
+export interface FeatureSelections {
+  subtitles: boolean;
+  backgroundChange: {
+    enabled: boolean;
+    presetId: string | null;
+  };
+  backgroundMusic: {
+    enabled: boolean;
+    trackId: string | null;
+    volume: number;
+  };
+  introOutro: {
+    enabled: boolean;
+    templateId: string | null;
+  };
+  fillerWordRemoval: boolean;
+}
+
+export interface ProcessingJob {
+  id: string;
+  videoId: string;
+  status: 'idle' | 'uploading' | 'queued' | 'processing' | 'complete' | 'failed' | 'cancelled';
+  progress: number;
+  requestedFeatures: FeatureSelections;
+  startedAt: string;
+  completedAt: string | null;
+  error: {
+    code: string;
+    message: string;
+  } | null;
+  retries: number;
+}
+
 export async function initializeSchema(): Promise<void> {
   try {
     const currentVersion = await AsyncStorage.getItem('appStateVersion');

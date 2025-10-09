@@ -15,15 +15,44 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check for prohibited terms
+      - name: Check for prohibited terms in diffs
         run: |
           git diff --cached origin/main...HEAD | tee changes.diff
           disallow='lorem ipsum|placeholder|TODO: mock|fake_key_|example\.com/api'
           if grep -Ei "$disallow" changes.diff; then
-            echo "❌ No-Mocks policy violation detected."
+            echo "❌ No-Mocks policy violation detected in diff."
             exit 1
           fi
-          echo "✅ No policy violations found"
+          echo "✅ No prohibited terms found in diff"
+
+      - name: Scan source for mock imports
+        run: |
+          echo "Scanning for mock imports in production code..."
+          if grep -rn --include='*.ts' --include='*.tsx' \
+            --exclude-dir=__tests__ \
+            --exclude-dir=__mocks__ \
+            --exclude-dir=node_modules \
+            --exclude='*.test.*' \
+            --exclude='*.spec.*' \
+            -E "from ['\"].*/__mocks__/|from ['\"].*/mocks/|MockM2Gateway|from ['\"].*/stubs/" \
+            src/; then
+            echo "❌ Mock imports detected in production code"
+            exit 1
+          fi
+          echo "✅ No mock imports found in production code"
+
+      - name: Verify no mock fallbacks in gateway
+        run: |
+          echo "Checking for mock fallback patterns..."
+          if grep -rn --include='*.ts' --include='*.tsx' \
+            --exclude-dir=__tests__ \
+            --exclude-dir=__mocks__ \
+            -E "USE_MOCK.*=.*true|new Mock.*Gateway\(\)" \
+            src/; then
+            echo "❌ Mock fallback pattern detected"
+            exit 1
+          fi
+          echo "✅ No mock fallback patterns found"
 
   typecheck:
     name: TypeScript Check
