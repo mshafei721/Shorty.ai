@@ -5,9 +5,12 @@ import {
   StyleSheet,
   AppState,
   AppStateStatus,
+  Alert,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { RootStackParamList } from '../navigation/RootNavigator';
 import {
   requestCameraPermissions,
   checkCameraPermissions,
@@ -19,19 +22,37 @@ import { useRecording } from '../features/recording/hooks/useRecording';
 import { CameraPreview } from '../features/recording/components/CameraPreview';
 import { TeleprompterOverlay } from '../features/recording/components/TeleprompterOverlay';
 
-type NavigationProp = StackNavigationProp<any>;
+type NavigationProp = StackNavigationProp<RootStackParamList, 'Record'>;
+type RouteProps = RouteProp<RootStackParamList, 'Record'>;
+
+interface Script {
+  id: string;
+  projectId: string;
+  text: string;
+  wordsCount: number;
+  wpmTarget: number;
+  createdAt: string;
+  source: 'ai' | 'manual';
+}
 
 export default function RecordScreen() {
   const navigation = useNavigation<NavigationProp>();
+  const route = useRoute<RouteProps>();
+  const { scriptId, projectId } = route.params || {};
+
   const [permissionStatus, setPermissionStatus] = useState<PermissionResult>('denied');
   const [showModal, setShowModal] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
   const [isCheckingPermissions, setIsCheckingPermissions] = useState(true);
 
-  // Recording state
-  const [scriptText] = useState(
+  // Script loading state
+  const [scriptText, setScriptText] = useState(
     'This is a sample script for testing the teleprompter. You can read along as it scrolls automatically during recording. The speed can be adjusted using the controls below.'
   );
+  const [loadedScript, setLoadedScript] = useState<Script | null>(null);
+  const [isLoadingScript, setIsLoadingScript] = useState(false);
+
+  // Recording state
   const [wpm, setWpm] = useState(140);
   const [fontSize, setFontSize] = useState(18);
   const [cameraFacing, setCameraFacing] = useState<'front' | 'back'>('back');
@@ -39,11 +60,50 @@ export default function RecordScreen() {
 
   // Recording FSM
   const recording = useRecording({
+    projectId,
+    scriptId,
     maxDurationMs: 120000,
     onStateChange: (state) => {
       console.log('Recording state changed:', state);
+
+      // TODO: Handle recording completion in Phase 3
+      // Will save video to AsyncStorage and navigate to Features screen
     },
   });
+
+  // Load script on mount if scriptId provided
+  useEffect(() => {
+    if (scriptId) {
+      loadScript(scriptId);
+    }
+  }, [scriptId]);
+
+  const loadScript = async (id: string) => {
+    try {
+      setIsLoadingScript(true);
+      const scriptsJson = await AsyncStorage.getItem('scripts');
+      if (scriptsJson) {
+        const scripts: Script[] = JSON.parse(scriptsJson);
+        const script = scripts.find(s => s.id === id);
+
+        if (script) {
+          setLoadedScript(script);
+          setScriptText(script.text);
+          setWpm(script.wpmTarget || 140);
+          console.log('✅ Loaded script:', script.text.substring(0, 50) + '...');
+          console.log('Script WPM:', script.wpmTarget);
+        } else {
+          console.warn('Script not found:', id);
+          Alert.alert('Script Not Found', 'Using default script for recording.');
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load script:', error);
+      Alert.alert('Error', 'Failed to load script. Using default.');
+    } finally {
+      setIsLoadingScript(false);
+    }
+  };
 
   const checkPermissions = async () => {
     const status = await checkCameraPermissions();
@@ -130,10 +190,12 @@ export default function RecordScreen() {
     setCameraFacing(prev => prev === 'back' ? 'front' : 'back');
   };
 
-  if (isCheckingPermissions) {
+  if (isCheckingPermissions || isLoadingScript) {
     return (
       <View style={styles.container}>
-        <Text style={styles.loadingText}>Checking permissions...</Text>
+        <Text style={styles.loadingText}>
+          {isCheckingPermissions ? 'Checking permissions...' : 'Loading script...'}
+        </Text>
       </View>
     );
   }
