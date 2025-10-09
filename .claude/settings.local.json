@@ -32,7 +32,8 @@
       "Bash(npx expo export:*)",
       "Bash(tee:*)",
       "Bash(if exist NUL del NUL)",
-      "Bash(del NUL)"
+      "Bash(del NUL)",
+      "Bash(eas init:*)"
     ],
     "deny": [],
     "ask": []
