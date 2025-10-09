@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import * as Linking from 'expo-linking';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
 import SplashScreen from '../screens/SplashScreen';
 import NicheSelectionScreen from '../screens/NicheSelectionScreen';
 import ProjectsListScreen from '../screens/ProjectsListScreen';
@@ -97,7 +97,7 @@ function MainNavigator() {
         options={{
           title: 'Projects',
           tabBarIcon: ({ color, size }) => (
-            <Text style={{ fontSize: size, color }}>📁</Text>
+            <Ionicons name="folder-outline" size={size} color={color} />
           ),
         }}
       />
@@ -107,7 +107,7 @@ function MainNavigator() {
         options={{
           title: 'Settings',
           tabBarIcon: ({ color, size }) => (
-            <Text style={{ fontSize: size, color }}>⚙️</Text>
+            <Ionicons name="settings-outline" size={size} color={color} />
           ),
         }}
       />

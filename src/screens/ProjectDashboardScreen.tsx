@@ -20,6 +20,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
 import type { RootStackParamList } from '../navigation/RootNavigator';
+import { Ionicons } from '@expo/vector-icons';
 import { StorageBanner } from '../components/StorageBanner';
 import { checkStorageStatus, type StorageStatus } from '../utils/storageGuards';
 
@@ -187,17 +188,17 @@ export default function ProjectDashboardScreen() {
           <Text style={styles.sectionTitle}>Quick Actions</Text>
           <View style={styles.actionsGrid}>
             <TouchableOpacity style={styles.actionCard} onPress={handleCreateProject}>
-              <Text style={styles.actionIcon}>📁</Text>
+              <Ionicons name="add-circle-outline" size={32} color="#007AFF" style={styles.actionIconView} />
               <Text style={styles.actionLabel}>New Project</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.actionCard} onPress={handleGenerateScript}>
-              <Text style={styles.actionIcon}>✨</Text>
+              <Ionicons name="sparkles-outline" size={32} color="#007AFF" style={styles.actionIconView} />
               <Text style={styles.actionLabel}>Generate Script</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.actionCard} onPress={handleStartRecording}>
-              <Text style={styles.actionIcon}>🎥</Text>
+              <Ionicons name="videocam-outline" size={32} color="#007AFF" style={styles.actionIconView} />
               <Text style={styles.actionLabel}>Record Video</Text>
             </TouchableOpacity>
           </View>
@@ -248,9 +249,17 @@ export default function ProjectDashboardScreen() {
                   <View key={script.id} style={styles.scriptCard}>
                     <View style={styles.scriptHeader}>
                       <Text style={styles.scriptProject}>{project?.name || 'Unknown'}</Text>
-                      <Text style={styles.scriptSource}>
-                        {script.source === 'ai' ? '✨ AI' : '✏️ Manual'}
-                      </Text>
+                      <View style={styles.scriptSourceBadge}>
+                        <Ionicons
+                          name={script.source === 'ai' ? 'sparkles' : 'create-outline'}
+                          size={14}
+                          color={script.source === 'ai' ? '#9C27B0' : '#666'}
+                          style={{ marginRight: 4 }}
+                        />
+                        <Text style={styles.scriptSource}>
+                          {script.source === 'ai' ? 'AI' : 'Manual'}
+                        </Text>
+                      </View>
                     </View>
                     <Text style={styles.scriptPreview} numberOfLines={2}>
                       {script.text}
@@ -373,8 +382,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  actionIcon: {
-    fontSize: 32,
+  actionIconView: {
     marginBottom: 8,
   },
   actionLabel: {
@@ -447,9 +455,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#000',
   },
+  scriptSourceBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   scriptSource: {
     fontSize: 12,
     color: '#666',
+    fontWeight: '500',
   },
   scriptPreview: {
     fontSize: 14,
