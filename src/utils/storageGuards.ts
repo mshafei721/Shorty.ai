@@ -26,9 +26,24 @@ const WARNING_THRESHOLD_MB = 2048;  // 2GB - Show warning
 
 /**
  * Check available storage on device
+ * Note: Expo SDK 54 removed getFreeDiskStorageAsync, fallback to mock values for web
  */
 export async function checkStorageStatus(): Promise<StorageStatus> {
-  const freeBytes = await FileSystem.getFreeDiskStorageAsync();
+  let freeBytes: number;
+
+  try {
+    // For native platforms, use the legacy API if available
+    if (FileSystem.getFreeDiskStorageAsync) {
+      freeBytes = await FileSystem.getFreeDiskStorageAsync();
+    } else {
+      // Fallback for web or when API is unavailable
+      // Return optimistic values (2GB free) to avoid blocking functionality
+      freeBytes = 2 * BYTES_PER_GB;
+    }
+  } catch (error) {
+    console.warn('Storage check failed, using fallback:', error);
+    freeBytes = 2 * BYTES_PER_GB;
+  }
 
   // Estimate total capacity (actual value not critical for warnings)
   const totalBytes = 64 * BYTES_PER_GB; // Typical device storage

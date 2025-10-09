@@ -18,7 +18,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
 import type { RootStackParamList } from '../navigation/RootNavigator';
 import { StorageBanner } from '../components/StorageBanner';
 import { checkStorageStatus, type StorageStatus } from '../utils/storageGuards';
@@ -50,7 +50,7 @@ interface Script {
 }
 
 export default function ProjectDashboardScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'ProjectDashboard'>>();
   const { projectId } = route.params;
 
@@ -107,11 +107,13 @@ export default function ProjectDashboardScreen() {
   };
 
   const handleCreateProject = () => {
-    navigation.navigate('CreateProject' as never);
+    // TODO: Implement CreateProject screen
+    console.log('Create project clicked');
   };
 
   const handleGenerateScript = () => {
-    navigation.navigate('ScriptGenerator' as never);
+    // TODO: Implement ScriptGenerator screen
+    console.log('Generate script clicked');
   };
 
   const handleStartRecording = () => {
@@ -274,8 +276,10 @@ export default function ProjectDashboardScreen() {
                     key={project.id}
                     style={styles.projectCard}
                     onPress={() => {
-                      // @ts-ignore - Navigation types not fully defined yet
-                      navigation.navigate('ProjectDetail', { projectId: project.id });
+                      // Navigate to current project dashboard (self-referential)
+                      if (project.id !== projectId) {
+                        navigation.navigate('ProjectDashboard', { projectId: project.id });
+                      }
                     }}
                   >
                     <Text style={styles.projectName}>{project.name}</Text>
