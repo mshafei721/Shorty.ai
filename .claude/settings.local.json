@@ -32,7 +32,9 @@
       "Bash(npx expo export:*)",
       "Bash(tee:*)",
       "Bash(if exist NUL del NUL)",
-      "Bash(del NUL)"
+      "Bash(del NUL)",
+      "Bash(git branch:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": []
