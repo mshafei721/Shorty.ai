@@ -15,3 +15,15 @@ export type { ProgressBarProps } from './ProgressBar';
 
 export { StatusBadge } from './StatusBadge';
 export type { StatusBadgeProps, StatusType } from './StatusBadge';
+
+export { RecordingButton } from './RecordingButton';
+export type { RecordingButtonProps, RecordingState } from './RecordingButton';
+
+export { TeleprompterOverlay } from './TeleprompterOverlay';
+export type { TeleprompterOverlayProps, TeleprompterFontSize } from './TeleprompterOverlay';
+
+export { FeatureToggleCard } from './FeatureToggleCard';
+export type { FeatureToggleCardProps } from './FeatureToggleCard';
+
+export { CircularProgress } from './CircularProgress';
+export type { CircularProgressProps } from './CircularProgress';
