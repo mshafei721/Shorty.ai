@@ -1,0 +1,286 @@
+{
+  "$schema": "Design tokens for Shorty.ai - Mobile-only OLED dark mode with Gen-Z aesthetic",
+  "version": "2.0.0",
+  "platform": "react-native",
+  "colors": {
+    "primary": {
+      "50": "#F5F3FF",
+      "100": "#EDE9FE",
+      "200": "#DDD6FE",
+      "300": "#C4B5FD",
+      "400": "#A78BFA",
+      "500": "#8B5CF6",
+      "600": "#7C5CFF",
+      "700": "#6D28D9",
+      "800": "#5B21B6",
+      "900": "#4C1D95"
+    },
+    "accent": {
+      "50": "#E0F9FF",
+      "100": "#B3ECFF",
+      "200": "#80E0FF",
+      "300": "#4DD4FF",
+      "400": "#26C9FF",
+      "500": "#00D4FF",
+      "600": "#00B8E6",
+      "700": "#0096CC",
+      "800": "#0075B3",
+      "900": "#005499"
+    },
+    "neutral": {
+      "0": "#FFFFFF",
+      "50": "#F8F9FA",
+      "100": "#E5E7EB",
+      "200": "#D1D5DB",
+      "300": "#9CA3AF",
+      "400": "#6B7280",
+      "500": "#4B5563",
+      "600": "#374151",
+      "700": "#1F2937",
+      "800": "#18191C",
+      "850": "#0F1012",
+      "900": "#0A0E27",
+      "1000": "#000000"
+    },
+    "semantic": {
+      "success": "#10B981",
+      "successLight": "#86EFAC",
+      "successDark": "#059669",
+      "info": "#00D4FF",
+      "infoLight": "#80E0FF",
+      "infoDark": "#00B8E6",
+      "warning": "#FF8C42",
+      "warningLight": "#FFB380",
+      "warningDark": "#FF6B00",
+      "error": "#FF006E",
+      "errorLight": "#FF6BA6",
+      "errorDark": "#E60063",
+      "recording": "#FF006E"
+    },
+    "surface": {
+      "background": "#000000",
+      "backgroundAlt": "#0A0E27",
+      "card": "#18191C",
+      "cardElevated": "#1F2937",
+      "overlay": "rgba(0, 0, 0, 0.85)",
+      "overlayBlur": "rgba(0, 0, 0, 0.6)",
+      "teleprompter": "rgba(0, 0, 0, 0.55)"
+    },
+    "text": {
+      "primary": "#FFFFFF",
+      "secondary": "#9CA3AF",
+      "tertiary": "#6B7280",
+      "disabled": "#4B5563",
+      "inverse": "#000000",
+      "onPrimary": "#FFFFFF",
+      "onAccent": "#000000",
+      "onSuccess": "#FFFFFF",
+      "onError": "#FFFFFF",
+      "onWarning": "#000000"
+    },
+    "border": {
+      "default": "rgba(255, 255, 255, 0.1)",
+      "subtle": "rgba(255, 255, 255, 0.05)",
+      "strong": "rgba(255, 255, 255, 0.2)",
+      "focus": "#7C5CFF",
+      "error": "#FF006E",
+      "success": "#10B981"
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "primary": "System",
+      "mono": "monospace",
+      "display": "System",
+      "teleprompter": "Lexend"
+    },
+    "fontSize": {
+      "display": 48,
+      "h1": 32,
+      "h2": 28,
+      "h3": 24,
+      "h4": 20,
+      "bodyLarge": 18,
+      "body": 16,
+      "bodySmall": 14,
+      "caption": 13,
+      "label": 12,
+      "tiny": 10
+    },
+    "lineHeight": {
+      "display": 56,
+      "h1": 40,
+      "h2": 36,
+      "h3": 32,
+      "h4": 28,
+      "bodyLarge": 28,
+      "body": 24,
+      "bodySmall": 20,
+      "caption": 18,
+      "label": 16,
+      "tiny": 14
+    },
+    "fontWeight": {
+      "regular": "400",
+      "medium": "500",
+      "semibold": "600",
+      "bold": "700",
+      "extrabold": "800",
+      "black": "900"
+    },
+    "letterSpacing": {
+      "tight": -0.5,
+      "normal": 0,
+      "wide": 0.5,
+      "wider": 1.0
+    }
+  },
+  "spacing": {
+    "s0": 0,
+    "s1": 4,
+    "s2": 8,
+    "s3": 12,
+    "s4": 16,
+    "s5": 20,
+    "s6": 24,
+    "s7": 32,
+    "s8": 40,
+    "s9": 48,
+    "s10": 64,
+    "s11": 80,
+    "s12": 96
+  },
+  "radius": {
+    "none": 0,
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 20,
+    "2xl": 24,
+    "full": 9999
+  },
+  "elevation": {
+    "none": {
+      "shadowColor": "#000000",
+      "shadowOffset": { "width": 0, "height": 0 },
+      "shadowOpacity": 0,
+      "shadowRadius": 0,
+      "elevation": 0
+    },
+    "sm": {
+      "shadowColor": "#000000",
+      "shadowOffset": { "width": 0, "height": 2 },
+      "shadowOpacity": 0.3,
+      "shadowRadius": 4,
+      "elevation": 2
+    },
+    "md": {
+      "shadowColor": "#000000",
+      "shadowOffset": { "width": 0, "height": 4 },
+      "shadowOpacity": 0.4,
+      "shadowRadius": 8,
+      "elevation": 4
+    },
+    "lg": {
+      "shadowColor": "#000000",
+      "shadowOffset": { "width": 0, "height": 8 },
+      "shadowOpacity": 0.5,
+      "shadowRadius": 12,
+      "elevation": 8
+    },
+    "xl": {
+      "shadowColor": "#000000",
+      "shadowOffset": { "width": 0, "height": 12 },
+      "shadowOpacity": 0.6,
+      "shadowRadius": 16,
+      "elevation": 12
+    }
+  },
+  "motion": {
+    "duration": {
+      "instant": 100,
+      "fast": 200,
+      "normal": 300,
+      "slow": 400,
+      "slower": 600
+    },
+    "easing": {
+      "standard": "cubic-bezier(0.4, 0.0, 0.2, 1)",
+      "decelerate": "cubic-bezier(0.0, 0.0, 0.2, 1)",
+      "accelerate": "cubic-bezier(0.4, 0.0, 1, 1)",
+      "sharp": "cubic-bezier(0.4, 0.0, 0.6, 1)",
+      "bounce": "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+      "spring": { "damping": 15, "stiffness": 150, "mass": 1 }
+    }
+  },
+  "accessibility": {
+    "minTouchTarget": 44,
+    "preferredTouchTarget": 48,
+    "focusOutlineWidth": 2,
+    "contrast": {
+      "normal": 4.5,
+      "large": 3.0,
+      "aaa": 7.0
+    }
+  },
+  "animation": {
+    "recordButton": {
+      "pulseScale": 1.4,
+      "pulseDuration": 1200,
+      "pulseOpacity": [0.8, 0],
+      "pressScale": 0.95
+    },
+    "teleprompter": {
+      "highlightDuration": 300,
+      "scrollSmooth": true,
+      "sentenceOpacity": {
+        "current": 1.0,
+        "upcoming": 0.5,
+        "past": 0.3
+      }
+    },
+    "statusBadge": {
+      "spinnerDuration": 1000,
+      "successScale": [1, 1.2, 1],
+      "errorShakeDuration": 400
+    }
+  },
+  "components": {
+    "button": {
+      "height": {
+        "small": 40,
+        "medium": 48,
+        "large": 56
+      },
+      "paddingHorizontal": {
+        "small": 16,
+        "medium": 24,
+        "large": 32
+      }
+    },
+    "input": {
+      "height": 48,
+      "paddingHorizontal": 16,
+      "paddingVertical": 12
+    },
+    "card": {
+      "padding": 16,
+      "paddingLarge": 20
+    },
+    "bottomSheet": {
+      "handleWidth": 36,
+      "handleHeight": 4,
+      "handleTopMargin": 12,
+      "borderRadiusTop": 24
+    },
+    "recordButton": {
+      "size": 80,
+      "innerCircleSize": 64
+    },
+    "fab": {
+      "size": 56,
+      "iconSize": 24
+    }
+  }
+}
